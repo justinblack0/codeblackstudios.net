@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Sent - Code Black Studios</title>
+  <link rel="icon" type="image/svg+xml" href="logo-stacked-box-clean.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon: #00ff00;
+      --neon-glow: rgba(0, 255, 0, 0.4);
+      --dark: #000;
+      --text-muted: #666;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--dark);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .checkmark {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: var(--neon);
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      max-width: 400px;
+    }
+
+    .back-link {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--neon);
+      text-decoration: none;
+      padding: 0.875rem 1.75rem;
+      border: 1px solid var(--neon);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 20px var(--neon-glow);
+    }
+  </style>
+</head>
+<body>
+  <div class="checkmark">✓</div>
+  <h1>Message Sent</h1>
+  <p>Thanks for reaching out! We'll get back to you as soon as possible.</p>
+  <a href="index.html" class="back-link">Back to Home</a>
+</body>
+</html>

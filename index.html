@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Black Studios</title>
+  <meta name="description" content="Code Black Studios - Mobile apps and games">
+  <link rel="icon" type="image/svg+xml" href="logo-stacked-box-clean.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon: #00ff00;
+      --neon-dim: #00cc00;
+      --neon-glow: rgba(0, 255, 0, 0.4);
+      --dark: #000;
+      --surface: #0a0a0a;
+      --surface-elevated: #111;
+      --text-muted: #666;
+      --text-dim: #444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--dark);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline effect overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+      );
+      z-index: 1000;
+    }
+
+    /* Subtle noise texture */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      z-index: 999;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      position: relative;
+    }
+
+    /* Ambient glow */
+    .ambient-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--neon-glow) 0%, transparent 70%);
+      opacity: 0.15;
+      pointer-events: none;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.1; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 0.2; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    .logo-container {
+      width: 220px;
+      height: 220px;
+      margin-bottom: 1.5rem;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      width: 220px;
+      height: 220px;
+      filter: drop-shadow(0 0 25px var(--neon-glow)) drop-shadow(0 0 50px rgba(0, 255, 0, 0.2));
+    }
+
+    .tagline {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 4rem;
+      animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--neon);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+      animation: fadeIn 0.8s ease-out 0.4s both;
+    }
+
+    .section-label::before,
+    .section-label::after {
+      content: '//';
+      color: var(--text-dim);
+      margin: 0 0.75rem;
+    }
+
+    .apps {
+      margin-bottom: 4rem;
+      text-align: center;
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .app-list {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .app-card {
+      background: var(--surface);
+      border: 1px solid #1a1a1a;
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      width: 200px;
+      text-decoration: none;
+      color: #fff;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .app-card:hover {
+      border-color: #2a2a2a;
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 60px rgba(0, 255, 0, 0.1);
+    }
+
+    .app-card:hover::before {
+      opacity: 1;
+    }
+
+    .app-icon {
+      width: 90px;
+      height: 90px;
+      border-radius: 22px;
+      margin-bottom: 1.25rem;
+      transition: transform 0.3s ease;
+    }
+
+    .app-card:hover .app-icon {
+      transform: scale(1.05);
+    }
+
+    .app-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .app-desc {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .contact {
+      margin-bottom: 3rem;
+      animation: fadeIn 0.8s ease-out 0.6s both;
+    }
+
+    .contact a {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+    }
+
+    .contact a:hover {
+      color: var(--neon);
+      border-color: var(--neon);
+      text-shadow: 0 0 20px var(--neon-glow);
+    }
+
+    footer {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      animation: fadeIn 0.8s ease-out 0.8s both;
+    }
+
+    footer a {
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: var(--neon);
+    }
+
+    .divider {
+      margin: 0 0.75rem;
+      opacity: 0.3;
+    }
+
+    /* Subtle grid background */
+    .grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 255, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 0, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      .logo-container {
+        width: 180px;
+        height: 180px;
+      }
+
+      .logo {
+        width: 180px;
+        height: 180px;
+      }
+
+      .tagline {
+        font-size: 0.8rem;
+        margin-bottom: 3rem;
+      }
+
+      .app-card {
+        width: 100%;
+        max-width: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="ambient-glow"></div>
+
+  <div class="container">
+    <div class="logo-container">
+      <img src="logo-stacked-box-clean.svg" alt="Code Black Studios" class="logo">
+    </div>
+
+    <p class="tagline">Mobile Apps & Games</p>
+
+    <div class="apps">
+      <div class="section-label">Our Apps</div>
+      <div class="app-list">
+        <a href="farkle.html" class="app-card">
+          <img src="farkle-icon.svg" alt="Farkle" class="app-icon">
+          <div class="app-name">Farkle</div>
+          <div class="app-desc">Push your luck dice game</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="contact">
+      <a href="contact.html">Contact Us</a>
+    </div>
+
+    <footer>
+      <span>&copy; 2025 Code Black Studios</span>
+    </footer>
+  </div>
+</body>
+</html>

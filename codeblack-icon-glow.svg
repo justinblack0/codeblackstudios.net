@@ -1,0 +1,24 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Code Black Studios Icon with glow effect -->
+  <rect width="512" height="512" fill="#000000"/>
+
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- The brackets and text with glow -->
+  <text x="256" y="310"
+        font-family="SF Mono, Monaco, Consolas, monospace"
+        font-size="140"
+        font-weight="700"
+        fill="#00ff00"
+        text-anchor="middle"
+        letter-spacing="-4"
+        filter="url(#glow)">&lt;CB/&gt;</text>
+</svg>

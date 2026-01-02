@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farkle - Code Black Studios</title>
+  <meta name="description" content="Farkle - A push your luck dice game. Play solo against AI or challenge friends in online multiplayer.">
+  <link rel="icon" type="image/svg+xml" href="logo-stacked-box-clean.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon: #00ff00;
+      --neon-dim: #00cc00;
+      --neon-glow: rgba(0, 255, 0, 0.4);
+      --dark: #000;
+      --surface: #0a0a0a;
+      --surface-elevated: #111;
+      --text-muted: #666;
+      --text-dim: #444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--dark);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Subtle grid background */
+    .grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 255, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 0, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      position: relative;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 3rem;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .back-link {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      transition: color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-link:hover {
+      color: var(--neon);
+    }
+
+    .back-link::before {
+      content: '<-';
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Hero section */
+    .hero {
+      display: flex;
+      gap: 2.5rem;
+      align-items: flex-start;
+      margin-bottom: 4rem;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .app-icon {
+      width: 220px;
+      height: 220px;
+      border-radius: 44px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 25px var(--neon-glow)) drop-shadow(0 0 50px rgba(0, 255, 0, 0.2));
+    }
+
+    .hero-content {
+      flex: 1;
+    }
+
+    .app-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .app-subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .app-description {
+      color: #ccc;
+      font-size: 1.1rem;
+      max-width: 500px;
+      margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      padding: 0.875rem 1.75rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--neon);
+      color: #000;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 30px var(--neon-glow);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--neon);
+      border: 1px solid var(--neon);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    }
+
+    /* Features */
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--neon);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+    }
+
+    .section-label::before,
+    .section-label::after {
+      content: '//';
+      color: var(--text-dim);
+      margin: 0 0.75rem;
+    }
+
+    .section-label::before {
+      margin-left: 0;
+    }
+
+    .features {
+      margin-bottom: 4rem;
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature {
+      background: var(--surface);
+      border: 1px solid #1a1a1a;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .feature:hover {
+      border-color: #2a2a2a;
+    }
+
+    .feature-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-desc {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Screenshots */
+    .screenshots {
+      margin-bottom: 4rem;
+      animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    .screenshots-scroll {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      padding: 1rem 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--text-dim) transparent;
+    }
+
+    .screenshots-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .screenshots-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .screenshots-scroll::-webkit-scrollbar-thumb {
+      background: var(--text-dim);
+      border-radius: 3px;
+    }
+
+    .screenshot {
+      flex-shrink: 0;
+      width: 220px;
+      height: 440px;
+      background: var(--surface);
+      border: 1px solid #1a1a1a;
+      border-radius: 24px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .screenshot:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .screenshot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid #1a1a1a;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      animation: fadeIn 0.8s ease-out 0.8s both;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--neon);
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .hero {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .app-icon {
+        width: 180px;
+        height: 180px;
+        border-radius: 36px;
+      }
+
+      .app-description {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .cta-buttons {
+        justify-content: center;
+      }
+
+      .app-title {
+        font-size: 2.25rem;
+      }
+
+      .screenshot {
+        width: 180px;
+        height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="container">
+    <header class="header">
+      <a href="index.html" class="back-link">Code Black Studios</a>
+    </header>
+
+    <section class="hero">
+      <img src="farkle-icon.svg" alt="Farkle" class="app-icon">
+      <div class="hero-content">
+        <h1 class="app-title">Farkle</h1>
+        <p class="app-subtitle">Push your luck dice game</p>
+        <p class="app-description">
+          Roll the dice, bank your points, or risk it all. Farkle is a classic dice game where greed can cost you everything. Play solo against AI opponents or challenge friends in real-time online multiplayer.
+        </p>
+        <div class="cta-buttons">
+          <a href="https://farkle-multiplayer.web.app" class="btn btn-primary">Play Now</a>
+          <a href="https://apps.apple.com" class="btn btn-secondary">App Store</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="section-label">Features</div>
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-title">Online Multiplayer</div>
+          <div class="feature-desc">Play with friends in real-time with room codes</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">AI Opponents</div>
+          <div class="feature-desc">Challenge AI opponents with different skill levels</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">15 Languages</div>
+          <div class="feature-desc">English, Spanish, French, German, Italian, Portuguese, Swedish, Norwegian, Danish, Finnish, Dutch, Polish, Russian, Chinese, Hindi</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">Local Play</div>
+          <div class="feature-desc">Pass and play with up to 5 players</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screenshots">
+      <div class="section-label">Screenshots</div>
+      <div class="screenshots-scroll">
+        <div class="screenshot">
+          <img src="Farkle_1_Green-Dark_Main.PNG" alt="Farkle main screen">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_2_Green-Dark_Dice-Select.PNG" alt="Farkle dice selection">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_3_Green-Dark_Hot-Dice.PNG" alt="Farkle hot dice">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_4_Green-Dark_Languages.PNG" alt="Farkle languages">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_6_White-Dark_Main.PNG" alt="Farkle white dark theme">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_7_White-Dark_Game.PNG" alt="Farkle white dark gameplay">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_8_White-Light_Main.PNG" alt="Farkle white light theme">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_9_White-Light_Game.PNG" alt="Farkle white light gameplay">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_10_Lilac-Light_Main.PNG" alt="Farkle lilac theme">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_11_Lilac-Light_Game.PNG" alt="Farkle lilac gameplay">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_12_Pink-Light_Main.PNG" alt="Farkle pink theme">
+        </div>
+        <div class="screenshot">
+          <img src="Farkle_13_Pink-Light_Game.PNG" alt="Farkle pink gameplay">
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-links">
+        <a href="farkle-privacy.html">Privacy Policy</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="index.html">More Apps</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

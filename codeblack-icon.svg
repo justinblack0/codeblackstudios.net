@@ -1,0 +1,13 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Code Black Studios Icon: <CB/> (square format) -->
+  <rect width="512" height="512" fill="#000000"/>
+
+  <!-- The brackets and text -->
+  <text x="256" y="310"
+        font-family="SF Mono, Monaco, Consolas, monospace"
+        font-size="140"
+        font-weight="700"
+        fill="#00ff00"
+        text-anchor="middle"
+        letter-spacing="-4">&lt;CB/&gt;</text>
+</svg>

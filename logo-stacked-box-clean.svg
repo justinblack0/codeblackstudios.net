@@ -1,0 +1,19 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Code Black Studios - CODE BLACK stacked, centered in square, no glow -->
+
+  <rect x="56" y="56" width="400" height="400" rx="60" ry="60"
+        fill="#000000"
+        stroke="#00ff00"
+        stroke-width="8"/>
+
+  <text x="108" y="235"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="80"
+        font-weight="900"
+        fill="#00ff00">CODE</text>
+  <text x="108" y="330"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="80"
+        font-weight="900"
+        fill="#00ff00">BLACK</text>
+</svg>

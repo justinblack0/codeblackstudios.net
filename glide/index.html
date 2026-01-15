@@ -232,15 +232,11 @@
 
     /* Elevation profile */
     .elevation-profile {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
       background: var(--bg-elevated);
       border-top: 1px solid var(--border);
       padding: 12px 16px;
       display: none;
-      z-index: 5;
+      flex-shrink: 0;
     }
 
     .elevation-profile.active {
@@ -1774,26 +1770,26 @@
       <div class="map-container">
         <div id="map"></div>
 
-        <!-- Elevation profile -->
-        <div class="elevation-profile" id="elevation-profile">
-          <div class="elevation-header">
-            <span class="elevation-title">Elevation Profile</span>
-            <span class="elevation-stats" id="elevation-stats"></span>
-          </div>
-          <canvas id="elevation-canvas"></canvas>
-          <div class="elevation-legend">
-            <span class="legend-item"><span class="legend-color safe"></span>&lt;5% Easy</span>
-            <span class="legend-item"><span class="legend-color moderate"></span>5-8% Moderate</span>
-            <span class="legend-item"><span class="legend-color steep"></span>&gt;8% Steep</span>
-          </div>
-        </div>
-
         <div class="loading-overlay" id="loading-overlay">
           <div class="loading-spinner"></div>
           <div class="loading-text" id="loading-text">Loading...</div>
           <div class="loading-progress">
             <div class="loading-progress-fill" id="loading-progress-fill"></div>
           </div>
+        </div>
+      </div>
+
+      <!-- Elevation profile -->
+      <div class="elevation-profile" id="elevation-profile">
+        <div class="elevation-header">
+          <span class="elevation-title">Elevation Profile</span>
+          <span class="elevation-stats" id="elevation-stats"></span>
+        </div>
+        <canvas id="elevation-canvas"></canvas>
+        <div class="elevation-legend">
+          <span class="legend-item"><span class="legend-color safe"></span>&lt;5% Easy</span>
+          <span class="legend-item"><span class="legend-color moderate"></span>5-8% Moderate</span>
+          <span class="legend-item"><span class="legend-color steep"></span>&gt;8% Steep</span>
         </div>
       </div>
 
@@ -2020,7 +2016,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.1.4</span>
+        <span class="version">v1.1.5</span>
       </div>
     </aside>
   </div>

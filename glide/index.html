@@ -2029,7 +2029,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.1.8</span>
+        <span class="version">v1.1.9</span>
       </div>
     </aside>
   </div>
@@ -2303,6 +2303,9 @@
 
       if (!route) return;
 
+      // Scroll page to top so map is fully visible
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
       // Populate inputs
       el.inputOrigin.value = route.origin;
       el.inputDestination.value = route.destination;
@@ -2314,6 +2317,7 @@
       });
 
       // Find routes to show map + elevation (like clicking Find Routes)
+      // This also scrolls the sidebar to "Choose a Route" section
       findRoutes();
     }
 

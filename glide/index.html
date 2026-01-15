@@ -252,6 +252,16 @@
       display: block;
     }
 
+    /* Hide elevation profile when street view is active */
+    body.streetview-active .elevation-profile {
+      display: none;
+    }
+
+    /* Show elevation profile when toggled to map view */
+    body.streetview-active.showing-map .elevation-profile.active {
+      display: block;
+    }
+
     .elevation-header {
       display: flex;
       justify-content: space-between;
@@ -2029,7 +2039,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.2.0</span>
+        <span class="version">v1.2.1</span>
       </div>
     </aside>
   </div>
@@ -2917,14 +2927,20 @@
 
     function hideStreetViewPanel() {
       el.streetviewPanel.classList.remove('active');
+      el.streetviewPanel.classList.remove('show-map');
       document.body.classList.remove('streetview-active');
       document.body.classList.remove('streetview-fullscreen');
+      document.body.classList.remove('showing-map');
       updateFullscreenIcon(false);
       state.currentStep = 2;
       updateStepIndicator(2);
       el.sectionRoutes.style.display = 'block';
       el.sectionCoverage.style.display = 'none';
       pause();
+
+      // Reset view toggle icon
+      el.iconMapView.style.display = 'block';
+      el.iconImageView.style.display = 'none';
 
       // Show continue button if we have images loaded
       if (state.images.length > 0) {
@@ -2944,6 +2960,7 @@
 
     function toggleViewMode() {
       const showingMap = el.streetviewPanel.classList.toggle('show-map');
+      document.body.classList.toggle('showing-map', showingMap);
       el.iconMapView.style.display = showingMap ? 'none' : 'block';
       el.iconImageView.style.display = showingMap ? 'block' : 'none';
     }

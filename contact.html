@@ -191,11 +191,11 @@
   <h1>Contact Us</h1>
   <p class="subtitle">Have a question, found a bug, or want to give feedback?</p>
 
-  <form name="contact" method="POST" action="/thank-you" data-netlify="true" netlify-honeypot="bot-field">
-    <input type="hidden" name="form-name" value="contact">
-    <p style="display:none">
-      <label>Don't fill this out: <input name="bot-field"></label>
-    </p>
+  <form method="POST" action="https://api.web3forms.com/submit">
+    <input type="hidden" name="access_key" value="5d9e775f-7262-479f-8b5b-f5ba4d7c58dc">
+    <input type="hidden" name="redirect" value="https://codeblackstudios.net/thank-you">
+    <input type="hidden" name="subject" value="New Contact Form Submission">
+    <input type="checkbox" name="botcheck" style="display: none;">
 
     <div class="form-group">
       <label for="name">Name</label>

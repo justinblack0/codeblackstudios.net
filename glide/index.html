@@ -876,6 +876,12 @@
       flex-shrink: 0;
     }
 
+    .status-bar .version {
+      margin-left: auto;
+      opacity: 0.5;
+      font-size: 10px;
+    }
+
     .status-dot {
       width: 6px;
       height: 6px;
@@ -1272,9 +1278,8 @@
 
       /* Status bar */
       .status-bar {
-        padding: 10px 14px;
+        padding: 10px;
         font-size: 11px;
-        text-align: center;
       }
 
       /* Street view panel - display in map area on mobile (like desktop) */
@@ -1856,6 +1861,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
+        <span class="version">v1.0.1</span>
       </div>
     </aside>
   </div>

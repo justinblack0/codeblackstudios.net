@@ -1997,7 +1997,8 @@
             ♿ <strong>Accessibility check:</strong> Use the Street View preview to check for steps, steep gradients, kerbs, and surface conditions along your route.
           </div>
 
-          <button class="action-btn primary" id="btn-generate-preview">Generate Street View Preview</button>
+          <button class="action-btn primary" id="btn-show-cached-preview" style="display: none;">Show Street View Preview</button>
+          <button class="action-btn primary" id="btn-generate-preview">Generate New Street View Preview</button>
           <button class="action-btn secondary" id="btn-continue-preview" style="display: none;">Continue Preview</button>
         </div>
 
@@ -2020,7 +2021,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.1.1</span>
+        <span class="version">v1.1.2</span>
       </div>
     </aside>
   </div>
@@ -2060,7 +2061,8 @@
       userLocation: null,
       elevationService: null,
       elevationData: null,
-      originalDirections: null
+      originalDirections: null,
+      cachedRecentImages: null
     };
 
     // ============================================
@@ -2084,6 +2086,7 @@
       btnUseMyLocation: document.getElementById('use-my-location'),
       inputDestination: document.getElementById('input-destination'),
       btnFindRoutes: document.getElementById('btn-find-routes'),
+      btnShowCachedPreview: document.getElementById('btn-show-cached-preview'),
       btnGeneratePreview: document.getElementById('btn-generate-preview'),
       btnContinuePreview: document.getElementById('btn-continue-preview'),
       btnBack: document.getElementById('btn-back'),
@@ -2288,7 +2291,7 @@
       });
     }
 
-    function loadRecentRoute(routeId) {
+    async function loadRecentRoute(routeId) {
       const routes = getRecentRoutes();
       const route = routes.find(r => r.id === routeId);
 
@@ -2304,23 +2307,16 @@
         btn.classList.toggle('active', btn.dataset.mode === route.mode);
       });
 
-      // Load saved imagery first (instant)
-      state.images = route.images;
-      state.currentIndex = 0;
-      el.totalFrames.textContent = route.images.length;
+      // Store cached images for later
+      state.cachedRecentImages = route.images;
 
-      // Update coverage display
-      const coverage = route.images.filter(i => i.hasImage).length;
-      el.coverageFill.style.width = (coverage / route.images.length * 100) + '%';
-      el.coverageText.textContent = Math.round(coverage / route.images.length * 100) + '%';
+      // Find routes to show map + elevation (like clicking Find Routes)
+      await findRoutes();
 
-      showStreetViewPanel();
-      displayImage(0);
-
-      setStatus(`Loaded saved route · ${coverage}/${route.images.length} images`, 'ready');
-
-      // Fetch and draw route on map in background
-      findRoutes();
+      // Show cached preview button if images exist
+      if (route.images && route.images.length > 0) {
+        el.btnShowCachedPreview.style.display = 'block';
+      }
     }
 
     function getModeIcon(mode) {
@@ -2447,6 +2443,8 @@
 
       el.btnFindRoutes.disabled = true;
       el.btnContinuePreview.style.display = 'none';
+      el.btnShowCachedPreview.style.display = 'none';
+      state.cachedRecentImages = null;
       state.images = []; // Clear previous images
       setStatus('Finding routes...', 'loading');
 
@@ -3100,6 +3098,15 @@
       el.btnContinuePreview.addEventListener('click', () => {
         showStreetViewPanel();
         displayImage(state.currentIndex);
+      });
+      el.btnShowCachedPreview.addEventListener('click', () => {
+        if (state.cachedRecentImages && state.cachedRecentImages.length > 0) {
+          state.images = state.cachedRecentImages;
+          state.currentIndex = 0;
+          showStreetViewPanel();
+          displayImage(0);
+          updateCoverageIndicator();
+        }
       });
       el.btnBack.addEventListener('click', hideStreetViewPanel);
       el.btnFullscreen.addEventListener('click', toggleFullscreen);

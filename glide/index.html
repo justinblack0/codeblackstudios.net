@@ -1057,20 +1057,21 @@
         font-size: 16px; /* Prevents iOS zoom on focus */
       }
 
-      /* Mode selector - 2x2 grid on mobile */
+      /* Mode selector - single row on mobile */
       .mode-selector {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
       }
 
       .mode-btn {
-        padding: 12px 8px;
-        min-height: 60px;
+        padding: 8px 4px;
+        min-height: auto;
+        font-size: 10px;
       }
 
       .mode-btn svg {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
       }
 
       /* Larger action buttons */

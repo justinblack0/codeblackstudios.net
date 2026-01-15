@@ -1346,6 +1346,36 @@
         font-size: 11px;
       }
 
+      /* Elevation profile - smaller on mobile, positioned above sidebar */
+      .elevation-profile {
+        padding: 8px 12px;
+        position: fixed;
+        bottom: 50vh;
+        left: 0;
+        right: 0;
+        z-index: 15;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+      }
+
+      .elevation-profile.active {
+        display: block;
+      }
+
+      #elevation-canvas {
+        height: 60px;
+      }
+
+      .elevation-header {
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+
+      .elevation-legend {
+        gap: 10px;
+        font-size: 10px;
+        margin-top: 6px;
+      }
+
       /* Street view panel - display in map area on mobile (like desktop) */
       .streetview-panel {
         position: absolute;
@@ -1939,7 +1969,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.0.4</span>
+        <span class="version">v1.0.5</span>
       </div>
     </aside>
   </div>
@@ -2282,6 +2312,8 @@
       state.directionsRenderer.addListener('directions_changed', () => {
         const directions = state.directionsRenderer.getDirections();
         if (directions) {
+          // Update state.routes to keep in sync with dragged route
+          state.routes = directions.routes;
           updateRouteSummary(directions.routes[state.selectedRouteIndex]);
         }
       });

@@ -2043,7 +2043,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.2.7</span>
+        <span class="version">v1.2.8</span>
       </div>
     </aside>
   </div>
@@ -3017,6 +3017,7 @@
 
     function displayImage(index) {
       if (index < 0 || index >= state.images.length) return;
+      if (index === state.currentIndex) return; // Skip if same position
 
       const img = state.images[index];
       state.currentIndex = index;

@@ -420,6 +420,11 @@
       min-width: 36px;
     }
 
+    /* Fullscreen button - hidden on desktop */
+    .fullscreen-btn {
+      display: none;
+    }
+
     /* Sidebar */
     .sidebar {
       background: var(--bg-secondary);
@@ -1114,20 +1119,30 @@
         font-size: 11px;
       }
 
-      /* Street view panel adjustments */
+      /* Street view panel - display in map area on mobile (like desktop) */
       .streetview-panel {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+      }
+
+      /* Fullscreen mode for Street View on mobile */
+      body.streetview-fullscreen .streetview-panel {
         position: fixed;
         inset: 0;
         z-index: 100;
       }
 
-      /* Hide sidebar when streetview is active on mobile */
-      body.streetview-active .sidebar {
+      body.streetview-fullscreen .sidebar {
         display: none;
       }
 
-      body.streetview-active .app-container {
-        grid-template-rows: auto 1fr;
+      body.streetview-fullscreen .header {
+        display: none;
+      }
+
+      body.streetview-fullscreen .app-container {
+        grid-template-rows: 1fr;
       }
 
       .back-btn {
@@ -1212,6 +1227,12 @@
       .speed-value {
         font-size: 11px;
         min-width: 32px;
+      }
+
+      /* Show fullscreen button on mobile */
+      .fullscreen-btn {
+        display: flex;
+        margin-left: auto;
       }
 
       /* Loading overlay */
@@ -1541,6 +1562,14 @@
               <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="4" step="0.5" value="1">
               <span class="speed-value" id="speed-value">1.0×</span>
             </div>
+            <button class="control-btn fullscreen-btn" id="btn-fullscreen" title="Toggle fullscreen">
+              <svg id="icon-expand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+              </svg>
+              <svg id="icon-collapse" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9V4H4m0 0l5 5m6-5h5v5m0 0l-5-5m-6 16v-5H4m0 0l5-5m6 10h5v-5m0 0l-5 5"></path>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -1706,6 +1735,7 @@
       btnGeneratePreview: document.getElementById('btn-generate-preview'),
       btnContinuePreview: document.getElementById('btn-continue-preview'),
       btnBack: document.getElementById('btn-back'),
+      btnFullscreen: document.getElementById('btn-fullscreen'),
       sectionRoutes: document.getElementById('section-routes'),
       sectionCoverage: document.getElementById('section-coverage'),
       routeOptions: document.getElementById('route-options'),
@@ -2157,16 +2187,28 @@
     function hideStreetViewPanel() {
       el.streetviewPanel.classList.remove('active');
       document.body.classList.remove('streetview-active');
+      document.body.classList.remove('streetview-fullscreen');
+      updateFullscreenIcon(false);
       state.currentStep = 2;
       updateStepIndicator(2);
       el.sectionRoutes.style.display = 'block';
       el.sectionCoverage.style.display = 'none';
       pause();
-      
+
       // Show continue button if we have images loaded
       if (state.images.length > 0) {
         el.btnContinuePreview.style.display = 'block';
       }
+    }
+
+    function toggleFullscreen() {
+      const isFullscreen = document.body.classList.toggle('streetview-fullscreen');
+      updateFullscreenIcon(isFullscreen);
+    }
+
+    function updateFullscreenIcon(isFullscreen) {
+      document.getElementById('icon-expand').style.display = isFullscreen ? 'none' : 'block';
+      document.getElementById('icon-collapse').style.display = isFullscreen ? 'block' : 'none';
     }
 
     function displayImage(index) {
@@ -2295,6 +2337,7 @@
         displayImage(state.currentIndex);
       });
       el.btnBack.addEventListener('click', hideStreetViewPanel);
+      el.btnFullscreen.addEventListener('click', toggleFullscreen);
 
       // Mode selector
       document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -2349,7 +2392,14 @@
           case ' ': e.preventDefault(); togglePlayPause(); break;
           case 'ArrowLeft': pause(); if (state.currentIndex > 0) displayImage(state.currentIndex - 1); break;
           case 'ArrowRight': pause(); if (state.currentIndex < state.images.length - 1) displayImage(state.currentIndex + 1); break;
-          case 'Escape': hideStreetViewPanel(); break;
+          case 'Escape':
+            if (document.body.classList.contains('streetview-fullscreen')) {
+              toggleFullscreen();
+            } else {
+              hideStreetViewPanel();
+            }
+            break;
+          case 'f': toggleFullscreen(); break;
         }
       });
 

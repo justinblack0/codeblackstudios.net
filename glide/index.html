@@ -564,6 +564,38 @@
 
     .route-input::placeholder { color: var(--text-muted); }
 
+    .route-input.has-location-btn {
+      padding-right: 44px;
+    }
+
+    .location-btn {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .location-btn:hover {
+      color: var(--accent);
+      background: var(--bg-tertiary);
+    }
+
+    .location-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
     /* Travel mode selector */
     .mode-selector {
       display: grid;
@@ -1725,7 +1757,10 @@
           <div class="route-inputs">
             <div class="input-group">
               <div class="input-icon origin"></div>
-              <input type="text" class="route-input" id="input-origin" placeholder="Starting point or postcode">
+              <input type="text" class="route-input has-location-btn" id="input-origin" placeholder="Start address">
+              <button type="button" class="location-btn" id="use-my-location" title="Use my location">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+              </button>
             </div>
             <div class="input-group">
               <div class="input-icon destination"></div>
@@ -1877,6 +1912,7 @@
       btnSpeedUp: document.getElementById('btn-speed-up'),
       speedValue: document.getElementById('speed-value'),
       inputOrigin: document.getElementById('input-origin'),
+      btnUseMyLocation: document.getElementById('use-my-location'),
       inputDestination: document.getElementById('input-destination'),
       btnFindRoutes: document.getElementById('btn-find-routes'),
       btnGeneratePreview: document.getElementById('btn-generate-preview'),
@@ -2703,6 +2739,12 @@
       el.btnBack.addEventListener('click', hideStreetViewPanel);
       el.btnFullscreen.addEventListener('click', toggleFullscreen);
       el.themeToggle.addEventListener('click', toggleTheme);
+
+      // Use my location button
+      el.btnUseMyLocation.addEventListener('click', () => {
+        el.inputOrigin.value = 'My Location';
+        el.inputOrigin.focus();
+      });
 
       // Mode selector
       document.querySelectorAll('.mode-btn').forEach(btn => {

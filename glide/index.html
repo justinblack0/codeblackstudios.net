@@ -2029,7 +2029,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.1.9</span>
+        <span class="version">v1.2.0</span>
       </div>
     </aside>
   </div>
@@ -2479,8 +2479,12 @@
             el.sectionRoutes.style.display = 'block';
             el.dragHint.style.display = 'block';
 
-            // Scroll sidebar to show route options
-            el.sectionRoutes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Scroll sidebar to show route options (without scrolling the page)
+            const sidebarContent = document.querySelector('.sidebar-content');
+            if (sidebarContent) {
+              const sectionTop = el.sectionRoutes.offsetTop - sidebarContent.offsetTop;
+              sidebarContent.scrollTo({ top: sectionTop, behavior: 'smooth' });
+            }
 
             // Show accessibility notice for wheelchair mode
             if (state.selectedMode === 'WHEELCHAIR') {

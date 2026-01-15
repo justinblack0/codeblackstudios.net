@@ -1939,7 +1939,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.0.3</span>
+        <span class="version">v1.0.4</span>
       </div>
     </aside>
   </div>
@@ -2496,6 +2496,9 @@
       const canvas = el.elevationCanvas;
       const ctx = canvas.getContext('2d');
 
+      // Get computed line color (canvas doesn't support CSS variables)
+      const lineColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#ffffff';
+
       // Set canvas size for high DPI
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
@@ -2505,6 +2508,12 @@
 
       const width = rect.width;
       const height = rect.height;
+
+      // Debug: check if dimensions are valid
+      if (width === 0 || height === 0) {
+        console.warn('Elevation canvas has no dimensions:', width, height);
+        return;
+      }
       const padding = { top: 10, bottom: 20, left: 0, right: 0 };
       const chartWidth = width - padding.left - padding.right;
       const chartHeight = height - padding.top - padding.bottom;
@@ -2572,7 +2581,7 @@
         const y = padding.top + chartHeight - ((elevationData[i].elevation - minElev) / elevRange) * chartHeight;
         ctx.lineTo(x, y);
       }
-      ctx.strokeStyle = 'var(--text-primary)';
+      ctx.strokeStyle = lineColor;
       ctx.lineWidth = 1.5;
       ctx.stroke();
 

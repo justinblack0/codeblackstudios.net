@@ -1997,7 +1997,7 @@
             ♿ <strong>Accessibility check:</strong> Use the Street View preview to check for steps, steep gradients, kerbs, and surface conditions along your route.
           </div>
 
-          <button class="action-btn primary" id="btn-generate-preview">Generate Street View Preview</button>
+          <button class="action-btn primary" id="btn-generate-preview">Show Street View Preview</button>
           <button class="action-btn secondary" id="btn-continue-preview" style="display: none;">Continue Preview</button>
         </div>
 
@@ -2020,7 +2020,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.1.3</span>
+        <span class="version">v1.1.4</span>
       </div>
     </aside>
   </div>
@@ -2687,9 +2687,18 @@
         state.elevationData = elevationData;
         // Show element first so canvas has dimensions
         el.elevationProfile.classList.add('active');
-        // Small delay to ensure layout is computed
+        // Double requestAnimationFrame to ensure layout is fully computed
         requestAnimationFrame(() => {
-          drawElevationProfile(elevationData);
+          requestAnimationFrame(() => {
+            const canvas = el.elevationCanvas;
+            const rect = canvas.getBoundingClientRect();
+            // If canvas still has no dimensions, retry after a short delay
+            if (rect.width === 0 || rect.height === 0) {
+              setTimeout(() => drawElevationProfile(elevationData), 100);
+            } else {
+              drawElevationProfile(elevationData);
+            }
+          });
         });
       } catch (error) {
         console.warn('Could not fetch elevation data:', error);
@@ -3196,7 +3205,7 @@
           sidebar.style.transition = '';
           const currentHeight = sidebar.offsetHeight;
           const threshold = window.innerHeight * 0.25;
-          
+
           if (currentHeight < threshold) {
             sidebar.classList.add('collapsed');
             sidebar.style.maxHeight = '';
@@ -3206,6 +3215,17 @@
           }
         });
       }
+
+      // Redraw elevation profile on resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (state.elevationData && el.elevationProfile.classList.contains('active')) {
+            drawElevationProfile(state.elevationData);
+          }
+        }, 150);
+      });
     }
 
     // Config

@@ -2039,7 +2039,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.2.1</span>
+        <span class="version">v1.2.2</span>
       </div>
     </aside>
   </div>
@@ -2886,7 +2886,7 @@
     function showStreetViewPanel() {
       el.streetviewPanel.classList.add('active');
       document.body.classList.add('streetview-active');
-      hideElevationProfile();
+      // Don't hide elevation profile - CSS handles visibility based on body classes
       state.currentStep = 3;
       updateStepIndicator(3);
       el.sectionRoutes.style.display = 'none';

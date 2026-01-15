@@ -157,6 +157,57 @@
       background: var(--accent);
     }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .theme-toggle svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Light mode */
+    body.light-mode {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e8e8ed;
+      --bg-elevated: #ffffff;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #98989d;
+      --border: #d2d2d7;
+      --accent-glow: rgba(34, 197, 94, 0.2);
+    }
+
+    body.light-mode .streetview-image-container {
+      background: #e8e8ed;
+    }
+
+    body.light-mode .map-container {
+      background: #e8e8ed;
+    }
+
     /* Main content */
     .main-content {
       background: var(--bg-primary);
@@ -394,38 +445,43 @@
     .speed-control {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 4px;
     }
 
-    .speed-label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .speed-slider {
-      width: 100px;
-      height: 6px;
-      -webkit-appearance: none;
-      appearance: none;
+    .speed-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
       background: var(--bg-elevated);
-      border-radius: 3px;
+      color: var(--text-secondary);
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
     }
 
-    .speed-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
+    .speed-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .speed-btn:active {
+      transform: scale(0.95);
+    }
+
+    .speed-btn svg {
       width: 14px;
       height: 14px;
-      background: var(--text-primary);
-      border-radius: 50%;
-      cursor: pointer;
     }
 
     .speed-value {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
       color: var(--text-secondary);
-      min-width: 36px;
+      min-width: 40px;
+      text-align: center;
     }
 
     /* Fullscreen button - hidden on desktop */
@@ -969,6 +1025,20 @@
         display: none;
       }
 
+      .header-right {
+        gap: 8px;
+      }
+
+      .theme-toggle {
+        width: 36px;
+        height: 36px;
+      }
+
+      .theme-toggle svg {
+        width: 18px;
+        height: 18px;
+      }
+
       .main-content {
         grid-row: 2;
       }
@@ -1018,11 +1088,10 @@
       }
 
       .logo-strapline {
-        font-size: 10px;
+        font-size: 12px;
         padding-left: 8px;
         margin-left: 0;
-        max-width: 150px;
-        line-height: 1.3;
+        white-space: nowrap;
       }
 
       .sidebar {
@@ -1221,20 +1290,17 @@
       }
 
       .speed-control {
-        gap: 8px;
+        gap: 2px;
       }
 
-      .speed-label {
-        display: none;
-      }
-
-      .speed-slider {
-        width: 70px;
+      .speed-btn {
+        width: 36px;
+        height: 36px;
       }
 
       .speed-value {
         font-size: 11px;
-        min-width: 32px;
+        min-width: 36px;
       }
 
       /* Show fullscreen button on mobile */
@@ -1465,12 +1531,22 @@
         <span class="logo-text">Glide</span>
         <span class="logo-strapline">See your route before you go. Glide smoothly.</span>
       </div>
-      <div class="steps-indicator">
-        <div class="step-dot active" data-step="1"></div>
-        <div class="step-line"></div>
-        <div class="step-dot" data-step="2"></div>
-        <div class="step-line"></div>
-        <div class="step-dot" data-step="3"></div>
+      <div class="header-right">
+        <div class="steps-indicator">
+          <div class="step-dot active" data-step="1"></div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="2"></div>
+          <div class="step-line"></div>
+          <div class="step-dot" data-step="3"></div>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode">
+          <svg class="icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+          <svg class="icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
       </div>
     </header>
 
@@ -1567,9 +1643,17 @@
               </button>
             </div>
             <div class="speed-control">
-              <span class="speed-label">Speed</span>
-              <input type="range" class="speed-slider" id="speed-slider" min="0.25" max="4" step="0.25" value="1">
+              <button class="speed-btn" id="btn-speed-down" title="Slower">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                </svg>
+              </button>
               <span class="speed-value" id="speed-value">1.0×</span>
+              <button class="speed-btn" id="btn-speed-up" title="Faster">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+              </button>
             </div>
             <button class="control-btn fullscreen-btn" id="btn-fullscreen" title="Toggle fullscreen">
               <svg id="icon-expand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1738,7 +1822,8 @@
       btnPlay: document.getElementById('btn-play'),
       iconPlay: document.getElementById('icon-play'),
       iconPause: document.getElementById('icon-pause'),
-      speedSlider: document.getElementById('speed-slider'),
+      btnSpeedDown: document.getElementById('btn-speed-down'),
+      btnSpeedUp: document.getElementById('btn-speed-up'),
       speedValue: document.getElementById('speed-value'),
       inputOrigin: document.getElementById('input-origin'),
       inputDestination: document.getElementById('input-destination'),
@@ -1764,7 +1849,8 @@
       statProgress: document.getElementById('stat-progress'),
       progressBar: document.getElementById('progress-bar'),
       dragHint: document.getElementById('drag-hint'),
-      accessibilityNotice: document.getElementById('accessibility-notice')
+      accessibilityNotice: document.getElementById('accessibility-notice'),
+      themeToggle: document.getElementById('theme-toggle')
     };
 
     // ============================================
@@ -1796,6 +1882,55 @@
       });
     }
 
+    const darkMapStyles = [
+      { elementType: 'geometry', stylers: [{ color: '#1c1c1f' }] },
+      { elementType: 'labels.text.stroke', stylers: [{ color: '#1c1c1f' }] },
+      { elementType: 'labels.text.fill', stylers: [{ color: '#636366' }] },
+      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2c2c30' }] },
+      { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#8a8a8a' }] },
+      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0e0e10' }] },
+      { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+    ];
+
+    const lightMapStyles = [
+      { elementType: 'geometry', stylers: [{ color: '#f5f5f7' }] },
+      { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
+      { elementType: 'labels.text.fill', stylers: [{ color: '#6e6e73' }] },
+      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
+      { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#6e6e73' }] },
+      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d2d2d7' }] },
+      { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+    ];
+
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-mode');
+      localStorage.setItem('glide-theme', isLight ? 'light' : 'dark');
+      updateThemeIcon(isLight);
+      updateMapStyles(isLight);
+    }
+
+    function updateThemeIcon(isLight) {
+      el.themeToggle.querySelector('.icon-sun').style.display = isLight ? 'none' : 'block';
+      el.themeToggle.querySelector('.icon-moon').style.display = isLight ? 'block' : 'none';
+    }
+
+    function updateMapStyles(isLight) {
+      if (state.map) {
+        state.map.setOptions({ styles: isLight ? lightMapStyles : darkMapStyles });
+      }
+      if (state.miniMap) {
+        state.miniMap.setOptions({ styles: isLight ? lightMapStyles : darkMapStyles });
+      }
+    }
+
+    function loadSavedTheme() {
+      const saved = localStorage.getItem('glide-theme');
+      if (saved === 'light') {
+        document.body.classList.add('light-mode');
+        updateThemeIcon(true);
+      }
+    }
+
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const R = 6371000;
       const φ1 = lat1 * Math.PI / 180;
@@ -1821,18 +1956,11 @@
     const DEFAULT_LOCATION = { lat: 51.505, lng: -0.09 }; // London fallback
 
     function initMap() {
+      const isLight = document.body.classList.contains('light-mode');
       state.map = new google.maps.Map(document.getElementById('map'), {
         center: DEFAULT_LOCATION,
         zoom: 13,
-        styles: [
-          { elementType: 'geometry', stylers: [{ color: '#1c1c1f' }] },
-          { elementType: 'labels.text.stroke', stylers: [{ color: '#1c1c1f' }] },
-          { elementType: 'labels.text.fill', stylers: [{ color: '#636366' }] },
-          { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2c2c30' }] },
-          { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#8a8a8a' }] },
-          { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0e0e10' }] },
-          { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
-        ],
+        styles: isLight ? lightMapStyles : darkMapStyles,
         disableDefaultUI: true,
         zoomControl: true,
         zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM }
@@ -2322,6 +2450,15 @@
       else play();
     }
 
+    function adjustSpeed(delta) {
+      const newSpeed = Math.max(0.25, Math.min(4, state.playbackSpeed + delta));
+      if (newSpeed !== state.playbackSpeed) {
+        state.playbackSpeed = newSpeed;
+        el.speedValue.textContent = state.playbackSpeed.toFixed(2).replace(/\.?0+$/, '') + '×';
+        if (state.isPlaying) { pause(); play(); }
+      }
+    }
+
     // ============================================
     // Generate Preview
     // ============================================
@@ -2371,6 +2508,7 @@
       });
       el.btnBack.addEventListener('click', hideStreetViewPanel);
       el.btnFullscreen.addEventListener('click', toggleFullscreen);
+      el.themeToggle.addEventListener('click', toggleTheme);
 
       // Mode selector
       document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -2410,11 +2548,9 @@
       });
 
       // Speed
-      el.speedSlider.addEventListener('input', (e) => {
-        state.playbackSpeed = parseFloat(e.target.value);
-        el.speedValue.textContent = state.playbackSpeed.toFixed(1) + '×';
-        if (state.isPlaying) { pause(); play(); }
-      });
+      // Speed controls
+      el.btnSpeedDown.addEventListener('click', () => adjustSpeed(-0.25));
+      el.btnSpeedUp.addEventListener('click', () => adjustSpeed(0.25));
 
       // Keyboard
       document.addEventListener('keydown', (e) => {
@@ -2542,6 +2678,7 @@
     // Init
     // ============================================
     function init() {
+      loadSavedTheme();
       initMap();
       setupEventListeners();
       setStatus('Enter origin and destination', '');
@@ -2558,6 +2695,7 @@
 
     // Check auth on page load
     document.addEventListener('DOMContentLoaded', () => {
+      loadSavedTheme();
       if (!_ck()) {
         _spg();
       }

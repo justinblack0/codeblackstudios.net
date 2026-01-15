@@ -252,13 +252,27 @@
       display: block;
     }
 
-    /* Hide elevation profile when street view is active */
-    body.streetview-active .elevation-profile {
-      display: none;
+    /* Elevation profile stays visible during street view */
+
+    .elevation-canvas-container {
+      position: relative;
     }
 
-    /* Show elevation profile when toggled to map view */
-    body.streetview-active.showing-map .elevation-profile.active {
+    .elevation-marker {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--accent);
+      border: 2px solid var(--bg-elevated);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 8px var(--accent);
+      display: none;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .elevation-marker.active {
       display: block;
     }
 
@@ -1924,7 +1938,10 @@
           <span class="elevation-title">Elevation Profile</span>
           <span class="elevation-stats" id="elevation-stats"></span>
         </div>
-        <canvas id="elevation-canvas"></canvas>
+        <div class="elevation-canvas-container">
+          <canvas id="elevation-canvas"></canvas>
+          <div class="elevation-marker" id="elevation-marker"></div>
+        </div>
         <div class="elevation-legend">
           <span class="legend-item"><span class="legend-color safe"></span>&lt;5% Easy</span>
           <span class="legend-item"><span class="legend-color moderate"></span>5-8% Moderate</span>
@@ -2043,7 +2060,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.2.5</span>
+        <span class="version">v1.2.6</span>
       </div>
     </aside>
   </div>
@@ -2137,7 +2154,8 @@
       recentRoutesList: document.getElementById('recent-routes-list'),
       elevationProfile: document.getElementById('elevation-profile'),
       elevationCanvas: document.getElementById('elevation-canvas'),
-      elevationStats: document.getElementById('elevation-stats')
+      elevationStats: document.getElementById('elevation-stats'),
+      elevationMarker: document.getElementById('elevation-marker')
     };
 
     // ============================================
@@ -2746,6 +2764,44 @@
 
     function hideElevationProfile() {
       el.elevationProfile.classList.remove('active');
+      el.elevationMarker.classList.remove('active');
+    }
+
+    function updateElevationMarker(progress) {
+      if (!state.elevationData || state.elevationData.length === 0) {
+        el.elevationMarker.classList.remove('active');
+        return;
+      }
+
+      const canvas = el.elevationCanvas;
+      const rect = canvas.getBoundingClientRect();
+      const padding = { top: 10, bottom: 20, left: 0, right: 0 };
+      const chartWidth = rect.width - padding.left - padding.right;
+      const chartHeight = rect.height - padding.top - padding.bottom;
+
+      // Get elevation range
+      const elevations = state.elevationData.map(d => d.elevation);
+      const minElev = Math.min(...elevations);
+      const maxElev = Math.max(...elevations);
+      const elevRange = maxElev - minElev || 1;
+
+      // Calculate X position based on progress (0-100)
+      const x = padding.left + (progress / 100) * chartWidth;
+
+      // Find the elevation at this progress point
+      const dataIndex = Math.min(
+        Math.floor((progress / 100) * (state.elevationData.length - 1)),
+        state.elevationData.length - 1
+      );
+      const elevation = state.elevationData[dataIndex].elevation;
+
+      // Calculate Y position based on elevation
+      const y = padding.top + chartHeight - ((elevation - minElev) / elevRange) * chartHeight;
+
+      // Update marker position
+      el.elevationMarker.style.left = x + 'px';
+      el.elevationMarker.style.top = y + 'px';
+      el.elevationMarker.classList.add('active');
     }
 
     // ============================================
@@ -2939,6 +2995,7 @@
       document.body.classList.remove('streetview-fullscreen');
       document.body.classList.remove('showing-map');
       updateFullscreenIcon(false);
+      el.elevationMarker.classList.remove('active');
       state.currentStep = 2;
       updateStepIndicator(2);
       el.sectionRoutes.style.display = 'block';
@@ -2983,6 +3040,9 @@
       el.currentFrame.textContent = index + 1;
       el.statDistance.textContent = Math.round(img.distance) + 'm';
       el.statProgress.textContent = Math.round(progress) + '%';
+
+      // Update elevation marker
+      updateElevationMarker(progress);
 
       // Update mini map
       if (state.miniMap) {

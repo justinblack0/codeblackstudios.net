@@ -2043,7 +2043,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.2.4</span>
+        <span class="version">v1.2.5</span>
       </div>
     </aside>
   </div>
@@ -2388,10 +2388,12 @@
       // Listen for route changes when user drags
       state.directionsRenderer.addListener('directions_changed', () => {
         const directions = state.directionsRenderer.getDirections();
-        if (directions) {
+        if (directions && directions.routes.length > 0) {
           // Update state.routes to keep in sync with dragged route
           state.routes = directions.routes;
-          updateRouteSummary(directions.routes[state.selectedRouteIndex]);
+          // Use valid index (dragged routes may only have 1 route at index 0)
+          const routeIndex = Math.min(state.selectedRouteIndex, directions.routes.length - 1);
+          updateRouteSummary(directions.routes[routeIndex]);
         }
       });
 
@@ -2914,8 +2916,9 @@
 
       // Draw route on mini map
       const directions = state.directionsRenderer.getDirections();
-      if (directions && state.miniMap) {
-        const route = directions.routes[state.selectedRouteIndex];
+      if (directions && directions.routes.length > 0 && state.miniMap) {
+        const routeIndex = Math.min(state.selectedRouteIndex, directions.routes.length - 1);
+        const route = directions.routes[routeIndex];
         state.miniMapRoute = new google.maps.Polyline({
           path: route.overview_path,
           strokeColor: '#22c55e',
@@ -3095,7 +3098,9 @@
       showLoading('Preparing route...', 0);
 
       try {
-        const route = directions.routes[state.selectedRouteIndex];
+        // Use valid index (dragged routes may only have 1 route at index 0)
+        const routeIndex = Math.min(state.selectedRouteIndex, directions.routes.length - 1);
+        const route = directions.routes[routeIndex];
         const { points, totalDistance } = sampleRoutePoints(route);
         
         state.routePoints = points;

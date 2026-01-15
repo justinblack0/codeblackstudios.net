@@ -200,15 +200,23 @@
     }
 
     .streetview-image {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.3s ease;
     }
 
-    .streetview-image.loaded {
+    .streetview-image.active {
       opacity: 1;
+      z-index: 2;
+    }
+
+    .streetview-image.previous {
+      opacity: 0;
+      z-index: 1;
     }
 
     .streetview-placeholder {
@@ -1483,7 +1491,8 @@
       <!-- Street view panel -->
       <div class="streetview-panel" id="streetview-panel">
         <div class="streetview-image-container">
-          <img id="streetview-img" class="streetview-image" alt="Street view">
+          <img id="streetview-img-1" class="streetview-image" alt="Street view">
+          <img id="streetview-img-2" class="streetview-image" alt="Street view">
           <div id="streetview-placeholder" class="streetview-placeholder">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -1559,7 +1568,7 @@
             </div>
             <div class="speed-control">
               <span class="speed-label">Speed</span>
-              <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="4" step="0.5" value="1">
+              <input type="range" class="speed-slider" id="speed-slider" min="0.25" max="4" step="0.25" value="1">
               <span class="speed-value" id="speed-value">1.0×</span>
             </div>
             <button class="control-btn fullscreen-btn" id="btn-fullscreen" title="Toggle fullscreen">
@@ -1706,6 +1715,7 @@
       routePoints: [],
       images: [],
       currentIndex: 0,
+      activeImageEl: 1,
       isPlaying: false,
       playbackSpeed: 1,
       playbackTimer: null,
@@ -1719,7 +1729,8 @@
     // ============================================
     const el = {
       streetviewPanel: document.getElementById('streetview-panel'),
-      streetviewImg: document.getElementById('streetview-img'),
+      streetviewImg1: document.getElementById('streetview-img-1'),
+      streetviewImg2: document.getElementById('streetview-img-2'),
       streetviewPlaceholder: document.getElementById('streetview-placeholder'),
       currentFrame: document.getElementById('current-frame'),
       totalFrames: document.getElementById('total-frames'),
@@ -2158,6 +2169,13 @@
       el.sectionRoutes.style.display = 'none';
       el.sectionCoverage.style.display = 'block';
 
+      // Reset image crossfade state
+      state.activeImageEl = 1;
+      el.streetviewImg1.classList.remove('active', 'previous');
+      el.streetviewImg2.classList.remove('active', 'previous');
+      el.streetviewImg1.src = '';
+      el.streetviewImg2.src = '';
+
       if (!state.miniMap) {
         initMiniMap();
       }
@@ -2243,14 +2261,29 @@
         state.miniMap.panTo({ lat: img.lat, lng: img.lng });
       }
 
-      // Update image
+      // Update image with crossfade
       if (img.hasImage && img.imageUrl) {
         el.streetviewPlaceholder.style.display = 'none';
-        el.streetviewImg.classList.remove('loaded');
-        el.streetviewImg.onload = () => el.streetviewImg.classList.add('loaded');
-        el.streetviewImg.src = img.imageUrl;
+
+        // Get current and next image elements
+        const currentEl = state.activeImageEl === 1 ? el.streetviewImg1 : el.streetviewImg2;
+        const nextEl = state.activeImageEl === 1 ? el.streetviewImg2 : el.streetviewImg1;
+
+        // Load new image into the inactive element
+        nextEl.onload = () => {
+          // Crossfade: activate the new image, deactivate the old
+          currentEl.classList.remove('active');
+          currentEl.classList.add('previous');
+          nextEl.classList.remove('previous');
+          nextEl.classList.add('active');
+
+          // Toggle for next time
+          state.activeImageEl = state.activeImageEl === 1 ? 2 : 1;
+        };
+        nextEl.src = img.imageUrl;
       } else {
-        el.streetviewImg.classList.remove('loaded');
+        el.streetviewImg1.classList.remove('active');
+        el.streetviewImg2.classList.remove('active');
         el.streetviewPlaceholder.style.display = 'flex';
       }
     }

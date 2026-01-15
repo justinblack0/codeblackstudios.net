@@ -220,9 +220,15 @@
       position: relative;
     }
 
-    .map-container {
-      flex: 1;
+    .view-area {
+      flex: 1 1 0;
+      min-height: 0;
       position: relative;
+    }
+
+    .map-container {
+      position: absolute;
+      inset: 0;
     }
 
     #map {
@@ -237,6 +243,7 @@
       padding: 12px 16px;
       display: none;
       flex-shrink: 0;
+      z-index: 5;
     }
 
     .elevation-profile.active {
@@ -1767,33 +1774,21 @@
 
     <!-- Main content -->
     <main class="main-content">
-      <div class="map-container">
-        <div id="map"></div>
+      <!-- View area: contains map and street view (they share this space) -->
+      <div class="view-area">
+        <div class="map-container">
+          <div id="map"></div>
 
-        <div class="loading-overlay" id="loading-overlay">
-          <div class="loading-spinner"></div>
-          <div class="loading-text" id="loading-text">Loading...</div>
-          <div class="loading-progress">
-            <div class="loading-progress-fill" id="loading-progress-fill"></div>
+          <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loading-text">Loading...</div>
+            <div class="loading-progress">
+              <div class="loading-progress-fill" id="loading-progress-fill"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Elevation profile -->
-      <div class="elevation-profile" id="elevation-profile">
-        <div class="elevation-header">
-          <span class="elevation-title">Elevation Profile</span>
-          <span class="elevation-stats" id="elevation-stats"></span>
-        </div>
-        <canvas id="elevation-canvas"></canvas>
-        <div class="elevation-legend">
-          <span class="legend-item"><span class="legend-color safe"></span>&lt;5% Easy</span>
-          <span class="legend-item"><span class="legend-color moderate"></span>5-8% Moderate</span>
-          <span class="legend-item"><span class="legend-color steep"></span>&gt;8% Steep</span>
-        </div>
-      </div>
-
-      <!-- Street view panel -->
+        <!-- Street view panel -->
       <div class="streetview-panel" id="streetview-panel">
         <div class="streetview-image-container">
           <img id="streetview-img-1" class="streetview-image" alt="Street view">
@@ -1902,6 +1897,22 @@
               </svg>
             </button>
           </div>
+        </div>
+      </div>
+      <!-- End of view-area -->
+      </div>
+
+      <!-- Elevation profile (below map/streetview) -->
+      <div class="elevation-profile" id="elevation-profile">
+        <div class="elevation-header">
+          <span class="elevation-title">Elevation Profile</span>
+          <span class="elevation-stats" id="elevation-stats"></span>
+        </div>
+        <canvas id="elevation-canvas"></canvas>
+        <div class="elevation-legend">
+          <span class="legend-item"><span class="legend-color safe"></span>&lt;5% Easy</span>
+          <span class="legend-item"><span class="legend-color moderate"></span>5-8% Moderate</span>
+          <span class="legend-item"><span class="legend-color steep"></span>&gt;8% Steep</span>
         </div>
       </div>
     </main>
@@ -2016,7 +2027,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.1.5</span>
+        <span class="version">v1.1.6</span>
       </div>
     </aside>
   </div>

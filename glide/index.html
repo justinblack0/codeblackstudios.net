@@ -1962,7 +1962,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.0.8</span>
+        <span class="version">v1.0.9</span>
       </div>
     </aside>
   </div>
@@ -2001,7 +2001,8 @@
       miniMapRoute: null,
       userLocation: null,
       elevationService: null,
-      elevationData: null
+      elevationData: null,
+      originalDirections: null
     };
 
     // ============================================
@@ -2395,6 +2396,7 @@
         state.directionsService.route(request, (result, status) => {
           if (status === 'OK') {
             state.routes = result.routes;
+            state.originalDirections = result;
             state.selectedRouteIndex = 0;
 
             state.directionsRenderer.setDirections(result);
@@ -2465,6 +2467,12 @@
 
     function selectRoute(index) {
       state.selectedRouteIndex = index;
+
+      // Reset to original directions (undoes any dragging)
+      if (state.originalDirections) {
+        state.directionsRenderer.setDirections(state.originalDirections);
+        state.routes = state.originalDirections.routes;
+      }
       state.directionsRenderer.setRouteIndex(index);
 
       document.querySelectorAll('.route-option').forEach((opt, i) => {

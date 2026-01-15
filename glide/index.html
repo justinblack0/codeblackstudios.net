@@ -2294,12 +2294,19 @@
 
       if (!route) return;
 
-      // Load saved imagery
-      state.images = route.images;
-      state.currentIndex = 0;
-
+      // Populate inputs
       el.inputOrigin.value = route.origin;
       el.inputDestination.value = route.destination;
+
+      // Set the travel mode
+      state.selectedMode = route.mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === route.mode);
+      });
+
+      // Load saved imagery first (instant)
+      state.images = route.images;
+      state.currentIndex = 0;
       el.totalFrames.textContent = route.images.length;
 
       // Update coverage display
@@ -2307,25 +2314,13 @@
       el.coverageFill.style.width = (coverage / route.images.length * 100) + '%';
       el.coverageText.textContent = Math.round(coverage / route.images.length * 100) + '%';
 
-      // Fetch and display route on map
-      const travelMode = route.mode === 'WHEELCHAIR' ? 'WALKING' : route.mode;
-      state.directionsService.route({
-        origin: route.origin,
-        destination: route.destination,
-        travelMode: google.maps.TravelMode[travelMode],
-        provideRouteAlternatives: false
-      }, (result, status) => {
-        if (status === 'OK') {
-          state.routes = result.routes;
-          state.originalDirections = result;
-          state.directionsRenderer.setDirections(result);
-        }
-      });
-
       showStreetViewPanel();
       displayImage(0);
 
       setStatus(`Loaded saved route · ${coverage}/${route.images.length} images`, 'ready');
+
+      // Fetch and draw route on map in background
+      findRoutes();
     }
 
     function getModeIcon(mode) {

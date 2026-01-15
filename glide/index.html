@@ -406,13 +406,28 @@
     .controls-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
+      gap: 16px;
     }
 
     .transport-controls {
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .speed-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+      min-width: 40px;
+      text-align: center;
     }
 
     .control-btn {
@@ -441,48 +456,6 @@
 
     .control-btn.play-btn:hover { background: var(--accent-dim); }
     .control-btn svg { width: 16px; height: 16px; }
-
-    .speed-control {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .speed-btn {
-      width: 32px;
-      height: 32px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--bg-elevated);
-      color: var(--text-secondary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s ease;
-    }
-
-    .speed-btn:hover {
-      background: var(--bg-tertiary);
-      color: var(--text-primary);
-    }
-
-    .speed-btn:active {
-      transform: scale(0.95);
-    }
-
-    .speed-btn svg {
-      width: 14px;
-      height: 14px;
-    }
-
-    .speed-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--text-secondary);
-      min-width: 40px;
-      text-align: center;
-    }
 
     /* Fullscreen button - hidden on desktop */
     .fullscreen-btn {
@@ -1289,24 +1262,22 @@
         height: 18px;
       }
 
-      .speed-control {
-        gap: 2px;
+      .controls-row {
+        gap: 12px;
       }
 
-      .speed-btn {
-        width: 36px;
-        height: 36px;
+      .speed-control {
+        gap: 4px;
       }
 
       .speed-value {
         font-size: 11px;
-        min-width: 36px;
+        min-width: 38px;
       }
 
       /* Show fullscreen button on mobile */
       .fullscreen-btn {
         display: flex;
-        margin-left: auto;
       }
 
       /* Loading overlay */
@@ -1643,13 +1614,13 @@
               </button>
             </div>
             <div class="speed-control">
-              <button class="speed-btn" id="btn-speed-down" title="Slower">
+              <button class="control-btn" id="btn-speed-down" title="Slower">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                 </svg>
               </button>
               <span class="speed-value" id="speed-value">1.0×</span>
-              <button class="speed-btn" id="btn-speed-up" title="Faster">
+              <button class="control-btn" id="btn-speed-up" title="Faster">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>

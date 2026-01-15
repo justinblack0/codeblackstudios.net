@@ -444,7 +444,6 @@
     }
 
     .control-btn:hover { background: var(--bg-tertiary); }
-    .control-btn:active { transform: scale(0.95); }
 
     .control-btn.play-btn {
       width: 44px;
@@ -1421,21 +1420,8 @@
 
     /* Touch device optimizations */
     @media (hover: none) and (pointer: coarse) {
-      .control-btn:active {
-        transform: scale(0.92);
-        background: var(--bg-tertiary);
-      }
-
-      .control-btn.play-btn:active {
-        background: var(--accent-dim);
-      }
-
       .mode-btn:active {
         background: var(--bg-tertiary);
-      }
-
-      .action-btn:active {
-        transform: scale(0.98);
       }
 
       .route-option:active {
@@ -2437,7 +2423,16 @@
       if (newSpeed !== state.playbackSpeed) {
         state.playbackSpeed = newSpeed;
         el.speedValue.textContent = state.playbackSpeed.toFixed(2).replace(/\.?0+$/, '') + '×';
+        localStorage.setItem('glide-speed', state.playbackSpeed);
         if (state.isPlaying) { pause(); play(); }
+      }
+    }
+
+    function loadSavedSpeed() {
+      const saved = localStorage.getItem('glide-speed');
+      if (saved) {
+        state.playbackSpeed = parseFloat(saved);
+        el.speedValue.textContent = state.playbackSpeed.toFixed(2).replace(/\.?0+$/, '') + '×';
       }
     }
 
@@ -2661,6 +2656,7 @@
     // ============================================
     function init() {
       loadSavedTheme();
+      loadSavedSpeed();
       initMap();
       setupEventListeners();
       setStatus('Enter origin and destination', '');

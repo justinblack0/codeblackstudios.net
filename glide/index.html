@@ -1962,7 +1962,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.0.6</span>
+        <span class="version">v1.0.7</span>
       </div>
     </aside>
   </div>
@@ -2407,7 +2407,10 @@
             updateStepIndicator(2);
             el.sectionRoutes.style.display = 'block';
             el.dragHint.style.display = 'block';
-            
+
+            // Scroll sidebar to show route options
+            el.sectionRoutes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
             // Show accessibility notice for wheelchair mode
             if (state.selectedMode === 'WHEELCHAIR') {
               el.accessibilityNotice.style.display = 'block';

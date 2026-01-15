@@ -1997,8 +1997,7 @@
             ♿ <strong>Accessibility check:</strong> Use the Street View preview to check for steps, steep gradients, kerbs, and surface conditions along your route.
           </div>
 
-          <button class="action-btn primary" id="btn-show-cached-preview" style="display: none;">Show Street View Preview</button>
-          <button class="action-btn primary" id="btn-generate-preview">Generate New Street View Preview</button>
+          <button class="action-btn primary" id="btn-generate-preview">Generate Street View Preview</button>
           <button class="action-btn secondary" id="btn-continue-preview" style="display: none;">Continue Preview</button>
         </div>
 
@@ -2021,7 +2020,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.1.2</span>
+        <span class="version">v1.1.3</span>
       </div>
     </aside>
   </div>
@@ -2061,8 +2060,7 @@
       userLocation: null,
       elevationService: null,
       elevationData: null,
-      originalDirections: null,
-      cachedRecentImages: null
+      originalDirections: null
     };
 
     // ============================================
@@ -2086,7 +2084,6 @@
       btnUseMyLocation: document.getElementById('use-my-location'),
       inputDestination: document.getElementById('input-destination'),
       btnFindRoutes: document.getElementById('btn-find-routes'),
-      btnShowCachedPreview: document.getElementById('btn-show-cached-preview'),
       btnGeneratePreview: document.getElementById('btn-generate-preview'),
       btnContinuePreview: document.getElementById('btn-continue-preview'),
       btnBack: document.getElementById('btn-back'),
@@ -2291,7 +2288,7 @@
       });
     }
 
-    async function loadRecentRoute(routeId) {
+    function loadRecentRoute(routeId) {
       const routes = getRecentRoutes();
       const route = routes.find(r => r.id === routeId);
 
@@ -2307,16 +2304,8 @@
         btn.classList.toggle('active', btn.dataset.mode === route.mode);
       });
 
-      // Store cached images for later
-      state.cachedRecentImages = route.images;
-
       // Find routes to show map + elevation (like clicking Find Routes)
-      await findRoutes();
-
-      // Show cached preview button if images exist
-      if (route.images && route.images.length > 0) {
-        el.btnShowCachedPreview.style.display = 'block';
-      }
+      findRoutes();
     }
 
     function getModeIcon(mode) {
@@ -2443,8 +2432,6 @@
 
       el.btnFindRoutes.disabled = true;
       el.btnContinuePreview.style.display = 'none';
-      el.btnShowCachedPreview.style.display = 'none';
-      state.cachedRecentImages = null;
       state.images = []; // Clear previous images
       setStatus('Finding routes...', 'loading');
 
@@ -3098,15 +3085,6 @@
       el.btnContinuePreview.addEventListener('click', () => {
         showStreetViewPanel();
         displayImage(state.currentIndex);
-      });
-      el.btnShowCachedPreview.addEventListener('click', () => {
-        if (state.cachedRecentImages && state.cachedRecentImages.length > 0) {
-          state.images = state.cachedRecentImages;
-          state.currentIndex = 0;
-          showStreetViewPanel();
-          displayImage(0);
-          updateCoverageIndicator();
-        }
       });
       el.btnBack.addEventListener('click', hideStreetViewPanel);
       el.btnFullscreen.addEventListener('click', toggleFullscreen);

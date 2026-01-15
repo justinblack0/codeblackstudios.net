@@ -1723,18 +1723,8 @@
 
     /* Safe area insets for notched phones */
     @supports (padding: env(safe-area-inset-bottom)) {
-      .playback-controls {
-        padding-bottom: calc(12px + env(safe-area-inset-bottom));
-      }
-
       .status-bar {
         padding-bottom: calc(10px + env(safe-area-inset-bottom));
-      }
-
-      @media (max-width: 600px) {
-        .playback-controls {
-          padding-bottom: calc(12px + env(safe-area-inset-bottom));
-        }
       }
     }
   </style>

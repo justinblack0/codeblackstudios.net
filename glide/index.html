@@ -406,8 +406,7 @@
     .controls-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 16px;
+      justify-content: space-between;
     }
 
     .transport-controls {
@@ -1246,7 +1245,7 @@
         gap: 8px;
       }
 
-      /* Hide skip-to-start/end on mobile - users can use progress bar */
+      /* Hide skip-to-end on mobile - keep skip-to-start for restarting */
       .skip-btn {
         display: none;
       }
@@ -1268,8 +1267,14 @@
         height: 18px;
       }
 
+      /* Controls layout: nav (left) | speed (center) | fullscreen (right) */
       .controls-row {
-        gap: 16px;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .transport-controls {
+        gap: 6px;
       }
 
       .speed-control {
@@ -1590,7 +1595,7 @@
           </div>
           <div class="controls-row">
             <div class="transport-controls">
-              <button class="control-btn skip-btn" id="btn-start" title="Go to start">
+              <button class="control-btn" id="btn-start" title="Go to start">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
                 </svg>

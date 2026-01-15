@@ -2060,7 +2060,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.2.6</span>
+        <span class="version">v1.2.7</span>
       </div>
     </aside>
   </div>
@@ -2785,17 +2785,20 @@
       const maxElev = Math.max(...elevations);
       const elevRange = maxElev - minElev || 1;
 
-      // Calculate X position based on progress (0-100)
-      const x = padding.left + (progress / 100) * chartWidth;
+      // Calculate fractional index along the elevation data
+      const n = state.elevationData.length;
+      const fractionalIndex = (progress / 100) * (n - 1);
+      const i0 = Math.floor(fractionalIndex);
+      const i1 = Math.min(i0 + 1, n - 1);
+      const t = fractionalIndex - i0; // interpolation factor (0-1)
 
-      // Find the elevation at this progress point
-      const dataIndex = Math.min(
-        Math.floor((progress / 100) * (state.elevationData.length - 1)),
-        state.elevationData.length - 1
-      );
-      const elevation = state.elevationData[dataIndex].elevation;
+      // Interpolate elevation between the two nearest data points
+      const elev0 = state.elevationData[i0].elevation;
+      const elev1 = state.elevationData[i1].elevation;
+      const elevation = elev0 + t * (elev1 - elev0);
 
-      // Calculate Y position based on elevation
+      // Calculate X and Y positions (matching how chart is drawn)
+      const x = padding.left + (fractionalIndex / (n - 1)) * chartWidth;
       const y = padding.top + chartHeight - ((elevation - minElev) / elevRange) * chartHeight;
 
       // Update marker position

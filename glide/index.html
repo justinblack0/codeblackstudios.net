@@ -1246,15 +1246,21 @@
         gap: 8px;
       }
 
+      /* Hide skip-to-start/end on mobile - users can use progress bar */
+      .skip-btn {
+        display: none;
+      }
+
       .control-btn {
         width: 44px;
         height: 44px;
         border-radius: var(--radius);
       }
 
+      /* Play button same size for consistent row */
       .control-btn.play-btn {
-        width: 52px;
-        height: 52px;
+        width: 44px;
+        height: 44px;
       }
 
       .control-btn svg {
@@ -1263,16 +1269,16 @@
       }
 
       .controls-row {
-        gap: 12px;
+        gap: 16px;
       }
 
       .speed-control {
-        gap: 4px;
+        gap: 6px;
       }
 
       .speed-value {
-        font-size: 11px;
-        min-width: 38px;
+        font-size: 12px;
+        min-width: 42px;
       }
 
       /* Show fullscreen button on mobile */
@@ -1584,7 +1590,7 @@
           </div>
           <div class="controls-row">
             <div class="transport-controls">
-              <button class="control-btn" id="btn-start" title="Go to start">
+              <button class="control-btn skip-btn" id="btn-start" title="Go to start">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
                 </svg>
@@ -1607,7 +1613,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
               </button>
-              <button class="control-btn" id="btn-end" title="Go to end">
+              <button class="control-btn skip-btn" id="btn-end" title="Go to end">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
                 </svg>

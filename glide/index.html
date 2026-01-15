@@ -278,7 +278,7 @@
     .elevation-legend {
       display: flex;
       gap: 16px;
-      margin-top: 8px;
+      margin-top: 4px;
       font-size: 11px;
       color: var(--text-muted);
     }
@@ -1408,7 +1408,7 @@
       .elevation-legend {
         gap: 10px;
         font-size: 10px;
-        margin-top: 6px;
+        margin-top: 2px;
       }
 
       /* Street view panel - display in map area on mobile (like desktop) */
@@ -2029,7 +2029,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.1.7</span>
+        <span class="version">v1.1.8</span>
       </div>
     </aside>
   </div>
@@ -2549,6 +2549,11 @@
       // Hide street view panel so user can see the map with selected route
       if (el.streetviewPanel.classList.contains('active')) {
         hideStreetViewPanel();
+      }
+
+      // On mobile, scroll to top so map is fully visible
+      if (window.innerWidth <= 900) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       // Update elevation profile for new route

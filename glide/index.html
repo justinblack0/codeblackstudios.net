@@ -2303,6 +2303,21 @@
       el.coverageFill.style.width = (coverage / route.images.length * 100) + '%';
       el.coverageText.textContent = Math.round(coverage / route.images.length * 100) + '%';
 
+      // Fetch and display route on map
+      const travelMode = route.mode === 'WHEELCHAIR' ? 'WALKING' : route.mode;
+      state.directionsService.route({
+        origin: route.origin,
+        destination: route.destination,
+        travelMode: google.maps.TravelMode[travelMode],
+        provideRouteAlternatives: false
+      }, (result, status) => {
+        if (status === 'OK') {
+          state.routes = result.routes;
+          state.originalDirections = result;
+          state.directionsRenderer.setDirections(result);
+        }
+      });
+
       showStreetViewPanel();
       displayImage(0);
 

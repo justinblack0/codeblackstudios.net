@@ -70,6 +70,9 @@
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
 
     .logo {
@@ -1346,19 +1349,9 @@
         font-size: 11px;
       }
 
-      /* Elevation profile - smaller on mobile, positioned above sidebar */
+      /* Elevation profile - smaller on mobile */
       .elevation-profile {
         padding: 8px 12px;
-        position: fixed;
-        bottom: 50vh;
-        left: 0;
-        right: 0;
-        z-index: 15;
-        border-radius: var(--radius-md) var(--radius-md) 0 0;
-      }
-
-      .elevation-profile.active {
-        display: block;
       }
 
       #elevation-canvas {
@@ -1969,7 +1962,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.0.5</span>
+        <span class="version">v1.0.6</span>
       </div>
     </aside>
   </div>

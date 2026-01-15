@@ -3237,13 +3237,47 @@
         displayImage(Math.round(fraction * (state.images.length - 1)));
       });
 
-      // Elevation profile scrubbing
-      el.elevationCanvas.addEventListener('click', (e) => {
+      // Elevation profile scrubbing (click and drag)
+      let isScrubbing = false;
+
+      function scrubToPosition(clientX) {
         if (state.images.length === 0) return;
-        pause();
         const rect = el.elevationCanvas.getBoundingClientRect();
-        const fraction = (e.clientX - rect.left) / rect.width;
+        const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
         displayImage(Math.round(fraction * (state.images.length - 1)));
+      }
+
+      el.elevationCanvas.addEventListener('mousedown', (e) => {
+        if (state.images.length === 0) return;
+        isScrubbing = true;
+        pause();
+        scrubToPosition(e.clientX);
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isScrubbing) return;
+        scrubToPosition(e.clientX);
+      });
+
+      document.addEventListener('mouseup', () => {
+        isScrubbing = false;
+      });
+
+      // Touch support
+      el.elevationCanvas.addEventListener('touchstart', (e) => {
+        if (state.images.length === 0) return;
+        isScrubbing = true;
+        pause();
+        scrubToPosition(e.touches[0].clientX);
+      }, { passive: true });
+
+      el.elevationCanvas.addEventListener('touchmove', (e) => {
+        if (!isScrubbing) return;
+        scrubToPosition(e.touches[0].clientX);
+      }, { passive: true });
+
+      el.elevationCanvas.addEventListener('touchend', () => {
+        isScrubbing = false;
       });
 
       // Speed

@@ -2073,7 +2073,7 @@
       selectedMode: 'WHEELCHAIR',
       routePoints: [],
       images: [],
-      currentIndex: 0,
+      currentIndex: -1,
       activeImageEl: 1,
       isPlaying: false,
       playbackSpeed: 1,
@@ -2463,6 +2463,7 @@
       el.btnFindRoutes.disabled = true;
       el.btnContinuePreview.style.display = 'none';
       state.images = []; // Clear previous images
+      state.currentIndex = -1; // Reset for fresh preview
       setStatus('Finding routes...', 'loading');
 
       try {

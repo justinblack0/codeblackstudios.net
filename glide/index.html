@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Glide - See your route before you go. Glide smoothly.</title>
 
   <!-- Favicon -->
@@ -1272,7 +1272,7 @@
 
       /* Status bar */
       .status-bar {
-        padding: 10px 14px;
+        padding: 10px calc(14px + env(safe-area-inset-right)) 10px calc(14px + env(safe-area-inset-left));
         font-size: 11px;
       }
 

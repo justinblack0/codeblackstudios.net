@@ -2662,7 +2662,7 @@
         console.warn('Elevation canvas has no dimensions:', width, height);
         return;
       }
-      const padding = { top: 10, bottom: 6, left: 0, right: 0 };
+      const padding = { top: 10, bottom: 4, left: 0, right: 0 };
       const chartWidth = width - padding.left - padding.right;
       const chartHeight = height - padding.top - padding.bottom;
 
@@ -2775,7 +2775,7 @@
 
       const canvas = el.elevationCanvas;
       const rect = canvas.getBoundingClientRect();
-      const padding = { top: 10, bottom: 6, left: 0, right: 0 };
+      const padding = { top: 10, bottom: 4, left: 0, right: 0 };
       const chartWidth = rect.width - padding.left - padding.right;
       const chartHeight = rect.height - padding.top - padding.bottom;
 

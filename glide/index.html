@@ -632,6 +632,82 @@
       cursor: not-allowed;
     }
 
+    /* Recent Routes */
+    .recent-routes {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .recent-routes-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .recent-routes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .recent-route-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .recent-route-item:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--accent);
+    }
+
+    .recent-route-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .recent-route-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .recent-route-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recent-route-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .recent-route-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
     /* Route options */
     .route-options {
       display: flex;
@@ -1687,6 +1763,12 @@
           </div>
 
           <button class="action-btn primary" id="btn-find-routes">Find Routes</button>
+
+          <!-- Recent Routes -->
+          <div class="recent-routes" id="recent-routes" style="display: none;">
+            <h4 class="recent-routes-title">Recent Routes</h4>
+            <div class="recent-routes-list" id="recent-routes-list"></div>
+          </div>
         </div>
 
         <!-- Route options (Step 2) -->
@@ -1819,7 +1901,9 @@
       progressBar: document.getElementById('progress-bar'),
       dragHint: document.getElementById('drag-hint'),
       accessibilityNotice: document.getElementById('accessibility-notice'),
-      themeToggle: document.getElementById('theme-toggle')
+      themeToggle: document.getElementById('theme-toggle'),
+      recentRoutes: document.getElementById('recent-routes'),
+      recentRoutesList: document.getElementById('recent-routes-list')
     };
 
     // ============================================
@@ -1917,6 +2001,127 @@
       const y = Math.sin(Δλ) * Math.cos(φ2);
       const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
       return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    }
+
+    // ============================================
+    // Recent Routes
+    // ============================================
+    const MAX_RECENT_ROUTES = 3;
+
+    function saveRecentRoute(origin, destination, mode, images, distance, duration) {
+      const routes = getRecentRoutes();
+
+      const newRoute = {
+        id: Date.now(),
+        origin,
+        destination,
+        mode,
+        images,
+        distance,
+        duration,
+        coverage: images.filter(i => i.hasImage).length,
+        totalImages: images.length,
+        timestamp: new Date().toISOString()
+      };
+
+      // Remove duplicate routes (same origin/destination/mode)
+      const filtered = routes.filter(r =>
+        !(r.origin === origin && r.destination === destination && r.mode === mode)
+      );
+
+      // Add new route at the start, keep max 3
+      filtered.unshift(newRoute);
+      const trimmed = filtered.slice(0, MAX_RECENT_ROUTES);
+
+      localStorage.setItem('glide-recent-routes', JSON.stringify(trimmed));
+      displayRecentRoutes();
+    }
+
+    function getRecentRoutes() {
+      try {
+        return JSON.parse(localStorage.getItem('glide-recent-routes')) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function displayRecentRoutes() {
+      const routes = getRecentRoutes();
+
+      if (routes.length === 0) {
+        el.recentRoutes.style.display = 'none';
+        return;
+      }
+
+      el.recentRoutes.style.display = 'block';
+      el.recentRoutesList.innerHTML = routes.map(route => {
+        const modeIcon = getModeIcon(route.mode);
+        const timeAgo = getTimeAgo(route.timestamp);
+        return `
+          <div class="recent-route-item" data-route-id="${route.id}">
+            <div class="recent-route-icon">${modeIcon}</div>
+            <div class="recent-route-info">
+              <div class="recent-route-name">${route.origin} → ${route.destination}</div>
+              <div class="recent-route-meta">${route.distance} · ${route.coverage}/${route.totalImages} images · ${timeAgo}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      el.recentRoutesList.querySelectorAll('.recent-route-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const routeId = parseInt(item.dataset.routeId);
+          loadRecentRoute(routeId);
+        });
+      });
+    }
+
+    function loadRecentRoute(routeId) {
+      const routes = getRecentRoutes();
+      const route = routes.find(r => r.id === routeId);
+
+      if (!route) return;
+
+      // Load saved imagery
+      state.images = route.images;
+      state.currentIndex = 0;
+
+      el.inputOrigin.value = route.origin;
+      el.inputDestination.value = route.destination;
+      el.totalFrames.textContent = route.images.length;
+
+      // Update coverage display
+      const coverage = route.images.filter(i => i.hasImage).length;
+      el.coverageFill.style.width = (coverage / route.images.length * 100) + '%';
+      el.coverageText.textContent = Math.round(coverage / route.images.length * 100) + '%';
+
+      showStreetViewPanel();
+      displayImage(0);
+
+      setStatus(`Loaded saved route · ${coverage}/${route.images.length} images`, 'ready');
+    }
+
+    function getModeIcon(mode) {
+      const icons = {
+        'WHEELCHAIR': '<svg fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M19 13v-2c-1.54.02-3.09-.75-4.07-1.83l-1.29-1.43c-.17-.19-.38-.34-.61-.45-.01 0-.01-.01-.02-.01H13c-.35-.2-.75-.3-1.19-.26C10.76 7.11 10 8.04 10 9.09V15c0 1.1.9 2 2 2h5v5h2v-5.5c0-1.1-.9-2-2-2h-3v-3.45c1.29 1.07 3.25 1.94 5 1.95zm-6.17 5c-.41 1.16-1.52 2-2.83 2-1.66 0-3-1.34-3-3 0-1.31.84-2.41 2-2.83V12.1c-2.28.46-4 2.48-4 4.9 0 2.76 2.24 5 5 5 2.42 0 4.44-1.72 4.9-4h-2.07z"/></svg>',
+        'WALKING': '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>',
+        'BICYCLING': '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.6-1.6-.6s-1.1.2-1.4.6L7.8 8.4c-.4.4-.6.9-.6 1.4 0 .6.2 1.1.6 1.4L11 14v5h2v-6.2l-2.2-2.3zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>',
+        'DRIVING': '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>'
+      };
+      return icons[mode] || icons['WALKING'];
+    }
+
+    function getTimeAgo(timestamp) {
+      const now = new Date();
+      const then = new Date(timestamp);
+      const diff = Math.floor((now - then) / 1000);
+
+      if (diff < 60) return 'Just now';
+      if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+      if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+      if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+      return then.toLocaleDateString();
     }
 
     // ============================================
@@ -2466,6 +2671,17 @@
 
         const coverage = state.images.filter(i => i.hasImage).length;
         setStatus(`${coverage}/${state.images.length} images loaded`, 'ready');
+
+        // Save to recent routes
+        const leg = route.legs[0];
+        saveRecentRoute(
+          el.inputOrigin.value,
+          el.inputDestination.value,
+          state.selectedMode,
+          state.images,
+          leg.distance.text,
+          leg.duration.text
+        );
       } catch (error) {
         hideLoading();
         setStatus('Error: ' + error.message, 'error');
@@ -2660,6 +2876,7 @@
       loadSavedSpeed();
       initMap();
       setupEventListeners();
+      displayRecentRoutes();
       setStatus('Enter origin and destination', '');
     }
 

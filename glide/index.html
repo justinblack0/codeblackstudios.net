@@ -1962,7 +1962,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.0.7</span>
+        <span class="version">v1.0.8</span>
       </div>
     </aside>
   </div>
@@ -2621,8 +2621,12 @@
       try {
         const elevationData = await fetchElevation(route);
         state.elevationData = elevationData;
-        drawElevationProfile(elevationData);
+        // Show element first so canvas has dimensions
         el.elevationProfile.classList.add('active');
+        // Small delay to ensure layout is computed
+        requestAnimationFrame(() => {
+          drawElevationProfile(elevationData);
+        });
       } catch (error) {
         console.warn('Could not fetch elevation data:', error);
         el.elevationProfile.classList.remove('active');

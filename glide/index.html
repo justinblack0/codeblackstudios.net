@@ -1727,6 +1727,50 @@
         padding-bottom: calc(10px + env(safe-area-inset-bottom));
       }
     }
+
+    /* Google Places Autocomplete styling */
+    .pac-container {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin-top: 4px;
+    }
+
+    .pac-item {
+      padding: 10px 14px;
+      color: var(--text-primary);
+      border-top: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .pac-item:first-child {
+      border-top: none;
+    }
+
+    .pac-item:hover,
+    .pac-item-selected {
+      background: var(--bg-secondary);
+    }
+
+    .pac-item-query {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .pac-matched {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .pac-icon {
+      display: none;
+    }
+
+    .pac-logo::after {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -2043,7 +2087,7 @@
       <div class="status-bar">
         <div class="status-dot" id="status-dot"></div>
         <span id="status-text">Enter origin and destination</span>
-        <span class="version">v1.2.8</span>
+        <span class="version">v1.2.9</span>
       </div>
     </aside>
   </div>
@@ -2395,6 +2439,36 @@
           // Use valid index (dragged routes may only have 1 route at index 0)
           const routeIndex = Math.min(state.selectedRouteIndex, directions.routes.length - 1);
           updateRouteSummary(directions.routes[routeIndex]);
+        }
+      });
+
+      // Setup Places Autocomplete
+      const autocompleteOptions = {
+        fields: ['formatted_address', 'geometry', 'name'],
+        types: ['geocode', 'establishment']
+      };
+
+      state.originAutocomplete = new google.maps.places.Autocomplete(
+        el.inputOrigin,
+        autocompleteOptions
+      );
+      state.destinationAutocomplete = new google.maps.places.Autocomplete(
+        el.inputDestination,
+        autocompleteOptions
+      );
+
+      // When a place is selected, update the input value
+      state.originAutocomplete.addListener('place_changed', () => {
+        const place = state.originAutocomplete.getPlace();
+        if (place.geometry) {
+          el.inputOrigin.value = place.formatted_address || place.name;
+        }
+      });
+
+      state.destinationAutocomplete.addListener('place_changed', () => {
+        const place = state.destinationAutocomplete.getPlace();
+        if (place.geometry) {
+          el.inputDestination.value = place.formatted_address || place.name;
         }
       });
 
@@ -3450,6 +3524,6 @@
     });
   </script>
   
-  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoyUlTxideOK6HEk11Q3OhEjb2jbqEXXQ&callback=initApp"></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoyUlTxideOK6HEk11Q3OhEjb2jbqEXXQ&libraries=places&callback=initApp"></script>
 </body>
 </html>

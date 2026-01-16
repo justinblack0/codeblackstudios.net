@@ -339,6 +339,15 @@
 
     .streetview-panel.show-map {
       background: transparent;
+      pointer-events: none;
+    }
+
+    .streetview-panel.show-map .view-toggle-btn {
+      pointer-events: auto;
+    }
+
+    .streetview-panel.show-map .look-around-btn {
+      display: none;
     }
 
     .streetview-panel.show-map .playback-controls {

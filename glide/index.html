@@ -2442,10 +2442,19 @@
         }
       });
 
-      // Setup Places Autocomplete
+      // Setup Places Autocomplete with strict local bounds
+      function updateAutocompleteBounds() {
+        const center = state.map.getCenter();
+        const radius = 5000; // 5km radius
+        const circle = new google.maps.Circle({ center, radius });
+        return circle.getBounds();
+      }
+
       const autocompleteOptions = {
         fields: ['formatted_address', 'geometry', 'name'],
-        types: ['geocode', 'establishment']
+        types: ['geocode', 'establishment'],
+        bounds: updateAutocompleteBounds(),
+        strictBounds: true
       };
 
       state.originAutocomplete = new google.maps.places.Autocomplete(
@@ -2457,18 +2466,12 @@
         autocompleteOptions
       );
 
-      // Bias results to area around map center (10km radius)
-      function updateAutocompleteBounds() {
-        const center = state.map.getCenter();
-        const radius = 10000; // 10km in meters
-        const circle = new google.maps.Circle({ center, radius });
-        const bounds = circle.getBounds();
+      // Update bounds when map moves
+      state.map.addListener('idle', () => {
+        const bounds = updateAutocompleteBounds();
         state.originAutocomplete.setBounds(bounds);
         state.destinationAutocomplete.setBounds(bounds);
-      }
-
-      updateAutocompleteBounds();
-      state.map.addListener('idle', updateAutocompleteBounds);
+      });
 
       // When a place is selected, update the input value
       state.originAutocomplete.addListener('place_changed', () => {

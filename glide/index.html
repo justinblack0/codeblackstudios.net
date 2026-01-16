@@ -2489,6 +2489,16 @@
 
       if (!route) return;
 
+      // Clear any previous saved polyline and markers first
+      if (state.savedRoutePolyline) {
+        state.savedRoutePolyline.setMap(null);
+        state.savedRoutePolyline = null;
+      }
+      if (state.savedRouteMarkers) {
+        state.savedRouteMarkers.forEach(m => m.setMap(null));
+        state.savedRouteMarkers = null;
+      }
+
       // Scroll page to top so map is fully visible
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -2510,14 +2520,6 @@
         // Clear any existing directions renderer route
         state.directionsRenderer.setMap(null);
         state.directionsRenderer.setMap(state.map);
-
-        // Remove any previous saved polyline and markers
-        if (state.savedRoutePolyline) {
-          state.savedRoutePolyline.setMap(null);
-        }
-        if (state.savedRouteMarkers) {
-          state.savedRouteMarkers.forEach(m => m.setMap(null));
-        }
 
         // Draw the saved route path as a polyline
         const pathLatLngs = route.routePath.map(p => new google.maps.LatLng(p.lat, p.lng));

@@ -2529,33 +2529,15 @@
           map: state.map
         });
 
-        // Add start and end markers (styled to match DirectionsRenderer)
+        // Add start and end markers
         state.savedRouteMarkers = [
           new google.maps.Marker({
             position: pathLatLngs[0],
-            map: state.map,
-            label: { text: 'A', color: 'white', fontWeight: 'bold' },
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: '#22c55e',
-              fillOpacity: 1,
-              strokeColor: '#166534',
-              strokeWeight: 2
-            }
+            map: state.map
           }),
           new google.maps.Marker({
             position: pathLatLngs[pathLatLngs.length - 1],
-            map: state.map,
-            label: { text: 'B', color: 'white', fontWeight: 'bold' },
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: '#ef4444',
-              fillOpacity: 1,
-              strokeColor: '#991b1b',
-              strokeWeight: 2
-            }
+            map: state.map
           })
         ];
 

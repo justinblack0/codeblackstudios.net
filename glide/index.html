@@ -2533,11 +2533,13 @@
         state.savedRouteMarkers = [
           new google.maps.Marker({
             position: pathLatLngs[0],
-            map: state.map
+            map: state.map,
+            label: { text: 'A', color: 'white' }
           }),
           new google.maps.Marker({
             position: pathLatLngs[pathLatLngs.length - 1],
-            map: state.map
+            map: state.map,
+            label: { text: 'B', color: 'white' }
           })
         ];
 

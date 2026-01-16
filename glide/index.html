@@ -3346,7 +3346,7 @@
       // Update mini map
       if (state.miniMap) {
         if (state.currentMarker) state.currentMarker.setMap(null);
-        
+
         state.currentMarker = new google.maps.Marker({
           position: { lat: img.lat, lng: img.lng },
           map: state.miniMap,
@@ -3361,6 +3361,25 @@
         });
 
         state.miniMap.panTo({ lat: img.lat, lng: img.lng });
+      }
+
+      // Update main map position marker
+      if (state.map) {
+        if (state.mainMapMarker) state.mainMapMarker.setMap(null);
+
+        state.mainMapMarker = new google.maps.Marker({
+          position: { lat: img.lat, lng: img.lng },
+          map: state.map,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#22c55e',
+            fillOpacity: 1,
+            strokeColor: '#fff',
+            strokeWeight: 3
+          },
+          zIndex: 1000
+        });
       }
 
       // Update image with crossfade

@@ -2457,9 +2457,18 @@
         autocompleteOptions
       );
 
-      // Bias results to map area (prioritizes nearby, doesn't exclude distant)
-      state.originAutocomplete.bindTo('bounds', state.map);
-      state.destinationAutocomplete.bindTo('bounds', state.map);
+      // Bias results to area around map center (10km radius)
+      function updateAutocompleteBounds() {
+        const center = state.map.getCenter();
+        const radius = 10000; // 10km in meters
+        const circle = new google.maps.Circle({ center, radius });
+        const bounds = circle.getBounds();
+        state.originAutocomplete.setBounds(bounds);
+        state.destinationAutocomplete.setBounds(bounds);
+      }
+
+      updateAutocompleteBounds();
+      state.map.addListener('idle', updateAutocompleteBounds);
 
       // When a place is selected, update the input value
       state.originAutocomplete.addListener('place_changed', () => {

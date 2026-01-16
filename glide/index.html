@@ -2511,9 +2511,12 @@
         state.directionsRenderer.setMap(null);
         state.directionsRenderer.setMap(state.map);
 
-        // Remove any previous saved polyline
+        // Remove any previous saved polyline and markers
         if (state.savedRoutePolyline) {
           state.savedRoutePolyline.setMap(null);
+        }
+        if (state.savedRouteMarkers) {
+          state.savedRouteMarkers.forEach(m => m.setMap(null));
         }
 
         // Draw the saved route path as a polyline
@@ -2524,6 +2527,20 @@
           strokeWeight: 5,
           map: state.map
         });
+
+        // Add start and end markers
+        state.savedRouteMarkers = [
+          new google.maps.Marker({
+            position: pathLatLngs[0],
+            map: state.map,
+            label: 'A'
+          }),
+          new google.maps.Marker({
+            position: pathLatLngs[pathLatLngs.length - 1],
+            map: state.map,
+            label: 'B'
+          })
+        ];
 
         // Fit map to route bounds
         const bounds = new google.maps.LatLngBounds();

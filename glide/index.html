@@ -2457,6 +2457,10 @@
         autocompleteOptions
       );
 
+      // Bias results to map area (prioritizes nearby, doesn't exclude distant)
+      state.originAutocomplete.bindTo('bounds', state.map);
+      state.destinationAutocomplete.bindTo('bounds', state.map);
+
       // When a place is selected, update the input value
       state.originAutocomplete.addListener('place_changed', () => {
         const place = state.originAutocomplete.getPlace();

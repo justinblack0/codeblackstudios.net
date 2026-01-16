@@ -2554,11 +2554,7 @@
         el.summaryDuration.textContent = route.duration;
         el.btnGeneratePreview.style.display = 'block';
         el.btnGeneratePreview.textContent = 'Show Street View Preview';
-
-        // Show continue button if we have cached images
-        if (route.images && route.images.length > 0) {
-          el.btnContinuePreview.style.display = 'block';
-        }
+        el.btnContinuePreview.style.display = 'none';
 
         setStatus('Route loaded from cache', 'ready');
         state.currentStep = 2;

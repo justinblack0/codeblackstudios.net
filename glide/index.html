@@ -2525,6 +2525,7 @@
       });
 
       // Listen for route changes when user drags
+      let elevationUpdateTimeout = null;
       state.directionsRenderer.addListener('directions_changed', () => {
         const directions = state.directionsRenderer.getDirections();
         if (directions && directions.routes.length > 0) {
@@ -2532,7 +2533,16 @@
           state.routes = directions.routes;
           // Use valid index (dragged routes may only have 1 route at index 0)
           const routeIndex = Math.min(state.selectedRouteIndex, directions.routes.length - 1);
-          updateRouteSummary(directions.routes[routeIndex]);
+          const route = directions.routes[routeIndex];
+          updateRouteSummary(route);
+
+          // Debounce elevation profile update (wait 500ms after last change)
+          if (elevationUpdateTimeout) clearTimeout(elevationUpdateTimeout);
+          elevationUpdateTimeout = setTimeout(() => {
+            if (el.elevationProfile.classList.contains('active')) {
+              showElevationProfile(route);
+            }
+          }, 500);
         }
       });
 

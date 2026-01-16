@@ -2402,8 +2402,18 @@
     // ============================================
     const MAX_RECENT_ROUTES = 3;
 
-    function saveRecentRoute(origin, destination, mode, images, distance, duration) {
+    function saveRecentRoute(origin, destination, mode, images, distance, duration, routePath, elevationData) {
       const routes = getRecentRoutes();
+
+      // Convert route path to simple lat/lng array for storage
+      const pathCoords = routePath ? routePath.map(p => ({ lat: p.lat(), lng: p.lng() })) : null;
+
+      // Convert elevation data locations to plain objects for JSON storage
+      const elevationCoords = elevationData ? elevationData.map(d => ({
+        elevation: d.elevation,
+        location: { lat: d.location.lat(), lng: d.location.lng() },
+        resolution: d.resolution
+      })) : null;
 
       const newRoute = {
         id: Date.now(),
@@ -2415,6 +2425,8 @@
         duration,
         coverage: images.filter(i => i.hasImage).length,
         totalImages: images.length,
+        routePath: pathCoords,
+        elevationData: elevationCoords,
         timestamp: new Date().toISOString()
       };
 
@@ -2490,9 +2502,65 @@
         btn.classList.toggle('active', btn.dataset.mode === route.mode);
       });
 
-      // Find routes to show map + elevation (like clicking Find Routes)
-      // This also scrolls the sidebar to "Choose a Route" section
-      findRoutes();
+      // If we have cached route path and images, restore directly
+      if (route.routePath && route.images && route.images.length > 0) {
+        // Clear any existing route display
+        state.directionsRenderer.setDirections({ routes: [] });
+
+        // Draw the saved route path as a polyline
+        if (state.savedRoutePolyline) {
+          state.savedRoutePolyline.setMap(null);
+        }
+        const pathLatLngs = route.routePath.map(p => new google.maps.LatLng(p.lat, p.lng));
+        state.savedRoutePolyline = new google.maps.Polyline({
+          path: pathLatLngs,
+          strokeColor: '#22c55e',
+          strokeWeight: 5,
+          map: state.map
+        });
+
+        // Fit map to route bounds
+        const bounds = new google.maps.LatLngBounds();
+        pathLatLngs.forEach(p => bounds.extend(p));
+        state.map.fitBounds(bounds);
+
+        // Restore elevation data and draw profile
+        if (route.elevationData) {
+          // Convert stored elevation data back to proper format
+          state.elevationData = route.elevationData.map(d => ({
+            elevation: d.elevation,
+            location: new google.maps.LatLng(d.location.lat, d.location.lng),
+            resolution: d.resolution
+          }));
+          el.elevationProfile.classList.add('active');
+          drawElevationProfile(state.elevationData);
+        }
+
+        // Restore images and show street view
+        state.images = route.images;
+        state.currentIndex = -1;
+        showStreetViewPanel();
+        displayImage(0);
+
+        // Update UI
+        el.sectionRoutes.style.display = 'none';
+        el.sectionCoverage.style.display = 'block';
+        el.routeOptions.style.display = 'none';
+        el.routeSummary.style.display = 'flex';
+        el.summaryDistance.textContent = route.distance;
+        el.summaryDuration.textContent = route.duration;
+        el.btnGeneratePreview.style.display = 'none';
+        el.btnContinuePreview.style.display = 'none';
+
+        const coverage = route.images.filter(i => i.hasImage).length;
+        setStatus(`${coverage}/${route.images.length} images loaded`, 'ready');
+
+        state.currentStep = 3;
+        updateStepIndicator(3);
+      } else {
+        // No cached data, fall back to finding routes
+        findRoutes();
+      }
     }
 
     function getModeIcon(mode) {
@@ -3374,7 +3442,7 @@
         const coverage = state.images.filter(i => i.hasImage).length;
         setStatus(`${coverage}/${state.images.length} images loaded`, 'ready');
 
-        // Save to recent routes
+        // Save to recent routes (including route path and elevation for restoration)
         const leg = route.legs[0];
         saveRecentRoute(
           el.inputOrigin.value,
@@ -3382,7 +3450,9 @@
           state.selectedMode,
           state.images,
           leg.distance.text,
-          leg.duration.text
+          leg.duration.text,
+          route.overview_path,
+          state.elevationData
         );
       } catch (error) {
         hideLoading();

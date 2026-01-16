@@ -2517,9 +2517,8 @@
 
       // If we have cached route path, draw it and restore data
       if (route.routePath && route.routePath.length > 0) {
-        // Clear any existing directions renderer route
+        // Clear any existing directions renderer route (don't re-add, we use polyline instead)
         state.directionsRenderer.setMap(null);
-        state.directionsRenderer.setMap(state.map);
 
         // Draw the saved route path as a polyline
         const pathLatLngs = route.routePath.map(p => new google.maps.LatLng(p.lat, p.lng));
@@ -2589,6 +2588,8 @@
         }
       } else {
         // No cached path data, fall back to finding routes
+        // Re-add DirectionsRenderer in case it was removed by a custom route
+        state.directionsRenderer.setMap(state.map);
         findRoutes();
       }
     }

@@ -2502,15 +2502,21 @@
         btn.classList.toggle('active', btn.dataset.mode === route.mode);
       });
 
-      // If we have cached route path and images, restore directly
-      if (route.routePath && route.images && route.images.length > 0) {
-        // Clear any existing route display
-        state.directionsRenderer.setDirections({ routes: [] });
+      // Store cached data for potential direct preview
+      state.cachedRecentRoute = route;
 
-        // Draw the saved route path as a polyline
+      // If we have cached route path, draw it and restore data
+      if (route.routePath && route.routePath.length > 0) {
+        // Clear any existing directions renderer route
+        state.directionsRenderer.setMap(null);
+        state.directionsRenderer.setMap(state.map);
+
+        // Remove any previous saved polyline
         if (state.savedRoutePolyline) {
           state.savedRoutePolyline.setMap(null);
         }
+
+        // Draw the saved route path as a polyline
         const pathLatLngs = route.routePath.map(p => new google.maps.LatLng(p.lat, p.lng));
         state.savedRoutePolyline = new google.maps.Polyline({
           path: pathLatLngs,
@@ -2525,40 +2531,49 @@
         state.map.fitBounds(bounds);
 
         // Restore elevation data and draw profile
-        if (route.elevationData) {
-          // Convert stored elevation data back to proper format
+        if (route.elevationData && route.elevationData.length > 0) {
           state.elevationData = route.elevationData.map(d => ({
             elevation: d.elevation,
             location: new google.maps.LatLng(d.location.lat, d.location.lng),
             resolution: d.resolution
           }));
           el.elevationProfile.classList.add('active');
-          drawElevationProfile(state.elevationData);
+          setTimeout(() => drawElevationProfile(state.elevationData), 100);
         }
 
-        // Restore images and show street view
-        state.images = route.images;
-        state.currentIndex = -1;
-        showStreetViewPanel();
-        displayImage(0);
+        // Restore images for later use
+        if (route.images && route.images.length > 0) {
+          state.images = route.images;
+        }
 
-        // Update UI
-        el.sectionRoutes.style.display = 'none';
-        el.sectionCoverage.style.display = 'block';
+        // Update UI to show route summary
+        el.sectionRoutes.style.display = 'block';
         el.routeOptions.style.display = 'none';
         el.routeSummary.style.display = 'flex';
         el.summaryDistance.textContent = route.distance;
         el.summaryDuration.textContent = route.duration;
-        el.btnGeneratePreview.style.display = 'none';
-        el.btnContinuePreview.style.display = 'none';
+        el.btnGeneratePreview.style.display = 'block';
+        el.btnGeneratePreview.textContent = 'Show Street View Preview';
 
-        const coverage = route.images.filter(i => i.hasImage).length;
-        setStatus(`${coverage}/${route.images.length} images loaded`, 'ready');
+        // Show continue button if we have cached images
+        if (route.images && route.images.length > 0) {
+          el.btnContinuePreview.style.display = 'block';
+        }
 
-        state.currentStep = 3;
-        updateStepIndicator(3);
+        setStatus('Route loaded from cache', 'ready');
+        state.currentStep = 2;
+        updateStepIndicator(2);
+
+        // Scroll sidebar to routes section
+        const sidebarContent = el.sidebarContent || document.querySelector('.sidebar-content');
+        if (sidebarContent && el.sectionRoutes) {
+          sidebarContent.scrollTo({
+            top: el.sectionRoutes.offsetTop - sidebarContent.offsetTop,
+            behavior: 'smooth'
+          });
+        }
       } else {
-        // No cached data, fall back to finding routes
+        // No cached path data, fall back to finding routes
         findRoutes();
       }
     }
@@ -3414,6 +3429,21 @@
     // Generate Preview
     // ============================================
     async function generatePreview() {
+      // Check if we have cached images from a recent route
+      if (state.cachedRecentRoute && state.images && state.images.length > 0) {
+        el.totalFrames.textContent = state.images.length;
+        state.currentIndex = -1;
+        showStreetViewPanel();
+        displayImage(0);
+
+        const coverage = state.images.filter(i => i.hasImage).length;
+        setStatus(`${coverage}/${state.images.length} images loaded (cached)`, 'ready');
+
+        // Clear the cached route reference
+        state.cachedRecentRoute = null;
+        return;
+      }
+
       const directions = state.directionsRenderer.getDirections();
       if (!directions) {
         setStatus('Please select a route first', 'error');
@@ -3429,12 +3459,12 @@
         const routeIndex = Math.min(state.selectedRouteIndex, directions.routes.length - 1);
         const route = directions.routes[routeIndex];
         const { points, totalDistance } = sampleRoutePoints(route);
-        
+
         state.routePoints = points;
         state.images = await fetchStreetViewImages(points);
-        
+
         el.totalFrames.textContent = state.images.length;
-        
+
         showStreetViewPanel();
         displayImage(0);
         hideLoading();

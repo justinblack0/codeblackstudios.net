@@ -246,8 +246,11 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .prof{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
 .prof .pic{ width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center;
   font-size:1.35rem; color:rgba(0,0,0,.5); box-shadow:3px 3px 0 var(--shadow); flex:0 0 auto; }
-.prof .pname{ font-weight:700; font-size:1.1rem; }
-.prof .psub{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; letter-spacing:.1em; color:var(--faint); text-transform:uppercase; }
+.prof .prof-id{ min-width:0; flex:1; }
+.pname-input{ font-family:'Space Grotesk',system-ui,sans-serif; font-weight:700; font-size:1.1rem; color:var(--ink); background:transparent; border:0; border-bottom:1px dashed var(--line); padding:1px 0; width:100%; }
+.pname-input:focus{ outline:none; border-bottom-color:var(--c3); }
+.pname-input::placeholder{ color:var(--faint); font-weight:400; }
+.prof .psub{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; letter-spacing:.1em; color:var(--faint); text-transform:uppercase; margin-top:3px; }
 .seg{ display:flex; gap:6px; margin:0 0 16px; }
 .seg button{ flex:1; border:1px solid var(--line); background:var(--panel2); color:var(--muted);
   font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.64rem; letter-spacing:.1em; text-transform:uppercase;
@@ -388,7 +391,10 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
     <div class="card sheet">
       <div class="prof">
         <div class="pic" id="sheetPic"></div>
-        <div><div class="pname" id="sheetName">You</div><div class="psub">Flummox player</div></div>
+        <div class="prof-id">
+          <input class="pname-input" id="nameInput" maxlength="20" placeholder="your name" autocapitalize="words" autocorrect="off" spellcheck="false">
+          <div class="psub">tap to set the name friends see</div>
+        </div>
       </div>
       <div class="seg" role="tablist">
         <button id="seg-stats" aria-selected="true">Stats</button>
@@ -1049,7 +1055,7 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('helpOverlay'
 /* ============ PROFILE & STATS (solo, local) ============ */
 const SCORE_CAP = 5;                  // DNF / weekly hole cap — see docs/social-design.md
 let dailyResults = {};                // dayIndex -> {solved,swipes,par,undos,ts}
-let profile = {name:'You', c:1, g:1}; // avatar: colour index 1..4, glyph index into AVATAR_GLYPHS
+let profile = {name:'', c:1, g:1}; // name '' until the player sets one; avatar colour 1..4 + glyph into AVATAR_GLYPHS
 // Avatar icons (flat monochrome, tone-on-tone) — separate from the game's SYMBOLS so
 // expanding this never touches board tiles. First 4 match the tiles for continuity.
 const AVATAR_GLYPHS = ['●','▲','■','✕','◆','★','✦','◐','❖','✚','▬','◣']; // 12 × 4 colours = 48 combos
@@ -1088,7 +1094,7 @@ function saveProfile(){ storeSet('flummox.profile', JSON.stringify(profile)); }
 
 function renderStats(){
   renderPic($('profileBtn')); renderPic($('sheetPic'));
-  $('sheetName').textContent=profile.name;
+  if(document.activeElement!==$('nameInput')) $('nameInput').value=profile.name||'';
   const s=computeStats();
   $('stPlayed').textContent=s.played;
   $('stSolve').textContent=s.solvePct+'%';
@@ -1129,6 +1135,9 @@ for(const k of ['stats','daily','weekly']) $('seg-'+k).onclick=()=>showPane(k);
 $('inviteBtn').onclick=doInvite;
 $('claimBtn').onclick=()=>claimInvite($('inviteInput').value.trim());
 $('inviteInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); claimInvite($('inviteInput').value.trim()); } });
+$('nameInput').addEventListener('input', ()=>{ profile.name=$('nameInput').value; });
+$('nameInput').addEventListener('change', ()=>{ profile.name=$('nameInput').value.trim(); saveProfile(); sbSyncProfile(); });
+$('nameInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('nameInput').blur(); } });
 
 /* ============ BACKEND (Supabase) ============ */
 // Public, RLS-protected config (safe to ship). Library is vendored (supabase.js).
@@ -1167,9 +1176,10 @@ async function sbInit(){
 // push the local profile up (server is the backup / basis for friends' views)
 async function sbSyncProfile(){
   if(!sb || !sbUser) return;
-  try{ await sb.from('profiles').update({
-    display_name:(profile.name||'You').slice(0,20), avatar_colour:profile.c, avatar_glyph:profile.g
-  }).eq('id', sbUser.id); }catch(e){}
+  const patch = { avatar_colour:profile.c, avatar_glyph:profile.g };
+  const nm = (profile.name||'').trim();
+  if(nm) patch.display_name = nm.slice(0,20);   // only push a real name; never the local "You" placeholder
+  try{ await sb.from('profiles').update(patch).eq('id', sbUser.id); }catch(e){}
 }
 
 // upload one daily result (par/user_id stamped server-side; idempotent upsert)
@@ -1246,7 +1256,7 @@ function renderDailyBoard(rows, iPlayed, friendCount){
   const body = rows.map(row=>{
     const { p, r, me } = row;
     const av = `<span class="lb-av" style="background:var(--c${p.avatar_colour||1})">${avGlyph(p.avatar_glyph)}</span>`;
-    const name = `<span class="lb-name">${escapeHtml(p.display_name||'Flummox player')}${me?' · you':''}</span>`;
+    const name = `<span class="lb-name">${me ? 'You' : escapeHtml(p.display_name||'Flummox player')}</span>`;
     let medal='', result;
     if(r){
       const o = r.score_over_par, col = o<=0?'--c1':o===1?'--c2':o===2?'--c3':'--c4';
@@ -1306,7 +1316,7 @@ function renderWeeklyBoard(d){
   for(const m of dayMeta) h += `<div class="wk-h"><span class="dot" style="background:var(${m.colour})"></span>${m.initial}</div>`;
   h += `<div class="wk-h wk-tot">TOT</div>`;
   for(const p of players){
-    h += `<div class="wk-name${p.me?' wk-row-me':''}"><span class="lb-av" style="background:var(--c${p.prof.avatar_colour||1})">${avGlyph(p.prof.avatar_glyph)}</span><span class="nm">${escapeHtml(p.prof.display_name||'Flummox player')}</span></div>`;
+    h += `<div class="wk-name${p.me?' wk-row-me':''}"><span class="lb-av" style="background:var(--c${p.prof.avatar_colour||1})">${avGlyph(p.prof.avatar_glyph)}</span><span class="nm">${p.me ? 'You' : escapeHtml(p.prof.display_name||'Flummox player')}</span></div>`;
     for(const c of p.cells) h += `<div class="wk-cell ${c.c}">${c.t}</div>`;
     h += `<div class="wk-tot-cell">${p.scored ? (p.total===0?'E':'+'+p.total) : '–'}</div>`;
   }

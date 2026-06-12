@@ -72,8 +72,6 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 }
 .diff[aria-checked="true"]{ background:var(--d); color:var(--bg); border-color:var(--d); }
 .diff[aria-checked="true"]::before{ background:var(--bg); opacity:.35; }
-.diff.newb{ flex:0 0 42px; font-size:.9rem; color:var(--ink); }
-.diff.newb:hover{ border-color:var(--muted); }
 .diff:focus-visible{ outline:2px solid var(--c3); outline-offset:1px; }
 
 /* stats */
@@ -189,15 +187,14 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .friend input::placeholder{ font-size:.72rem; letter-spacing:.08em; font-weight:600; color:var(--faint); }
 .friend input:focus-visible{ outline:2px solid var(--c3); }
 
-/* how to play */
-details{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:13px 15px; }
-summary{
-  font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.74rem;
-  letter-spacing:.08em; text-transform:uppercase; cursor:pointer; list-style:none; color:var(--muted);
-}
-summary::before{ content:"? "; color:var(--c2); }
-details p{ color:var(--muted); font-size:.86rem; line-height:1.6; margin-top:9px; }
-details b{ color:var(--ink); font-weight:600; }
+/* help */
+.hbtns{ display:flex; gap:8px; }
+#helpBtn{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:1rem; color:var(--c2); }
+.card.help{ text-align:left; }
+.card.help h2{ margin:0 0 12px; }
+.card.help p{ color:var(--muted); font-size:.88rem; line-height:1.6; margin:0 0 10px; }
+.card.help b{ color:var(--ink); font-weight:600; }
+.card.help .controls{ margin-top:16px; }
 
 /* toast */
 .toast{
@@ -221,7 +218,11 @@ details b{ color:var(--ink); font-weight:600; }
   text-align:center; animation:cardin .22s backwards; box-shadow:5px 5px 0 var(--shadow);
 }
 @keyframes cardin{ from{ transform:translateY(10px); opacity:0; } }
-.card .big{ font-size:2.4rem; line-height:1; }
+.card .big{
+  display:inline-block; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:1.5rem;
+  letter-spacing:.08em; padding:8px 16px; border:2px solid currentColor; border-radius:6px;
+  transform:rotate(-4deg); box-shadow:3px 3px 0 var(--shadow);
+}
 .card h2{ font-weight:700; font-size:1.4rem; margin:10px 0 2px; letter-spacing:-.02em; }
 .card .sub{ color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:.82rem; margin-bottom:18px; }
 .card .controls{ flex-direction:column; }
@@ -233,7 +234,10 @@ details b{ color:var(--ink); font-weight:600; }
     <div>
       <div class="logo"><span class="flum">flum</span><span class="m1">m</span><span class="m2">o</span><span class="m3">x</span><span class="dot"></span></div>
     </div>
-    <button class="iconbtn" id="soundBtn" aria-label="Toggle sound">🔊</button>
+    <div class="hbtns">
+      <button class="iconbtn" id="helpBtn" aria-label="How to play">?</button>
+      <button class="iconbtn" id="soundBtn" aria-label="Toggle sound" aria-pressed="true"></button>
+    </div>
   </header>
 
   <div class="tabs" role="tablist" aria-label="Game mode">
@@ -247,7 +251,6 @@ details b{ color:var(--ink); font-weight:600; }
     <button class="diff" data-d="medium">medium</button>
     <button class="diff" data-d="hard">hard</button>
     <button class="diff" data-d="brutal">brutal</button>
-    <button class="diff newb" id="newBoard" aria-label="New board" title="New board">&#8635;</button>
   </div>
 
   <div class="friend" id="friendPanel">
@@ -263,7 +266,7 @@ details b{ color:var(--ink); font-weight:600; }
     <div class="fcol">
       <span class="flabel">Friend's game</span>
       <div class="row">
-        <input id="codeInput" maxlength="4" placeholder="enter code" autocomplete="off" aria-label="Enter a friend's code">
+        <input id="codeInput" maxlength="5" placeholder="enter code" autocomplete="off" aria-label="Enter a friend's code">
         <button class="icobtn play" id="playCode" aria-label="Play entered code" title="Play">&#9654;</button>
       </div>
     </div>
@@ -290,19 +293,22 @@ details b{ color:var(--ink); font-weight:600; }
     <button class="btn primary" id="shareBtn">Share</button>
   </div>
 
-  <details id="howto" open>
-    <summary>How to play</summary>
-    <p><b>Swipe</b> (or use arrow keys) and every tile slides as far as it can.
-    When <b>3 or more</b> of the same colour touch, they pop — and pops can chain.
-    <b>Clear the board</b> in as few swipes as possible. Match <b>par</b> for the trophy.
-    Careful: leave fewer than 3 of a colour and they're stranded for good.</p>
-  </details>
-
   <div class="toast" id="toast"></div>
+
+  <div class="overlay" id="helpOverlay">
+    <div class="card help">
+      <h2>How to play</h2>
+      <p><b>Swipe</b> — or use arrow keys — and every tile slides as far as it can go.</p>
+      <p>When <b>3 or more</b> of a colour touch, they clear. Clears can chain.</p>
+      <p><b>Empty the board</b> in as few swipes as possible. Match <b>par</b> — the proven minimum.</p>
+      <p>Careful: leave fewer than 3 of a colour and they're <b>stranded</b> for good. Undo costs a swipe.</p>
+      <div class="controls"><button class="btn primary" id="helpOk">Got it</button></div>
+    </div>
+  </div>
 
   <div class="overlay" id="overlay">
     <div class="card">
-      <div class="big" id="winEmoji">🏆</div>
+      <div class="big" id="winEmoji">PAR!</div>
       <h2 id="winTitle">Cleared!</h2>
       <div class="sub" id="winSub"></div>
       <div class="controls">
@@ -514,7 +520,7 @@ function popGroups(tiles){
         if(v && v.colour===t.colour && !seen.has(v.id)){ seen.add(v.id); group.push(v); stack.push(v); }
       }
     }
-    if(group.length>=3) out.push(...group);
+    if(group.length>=3) out.push(group);
   }
   return out;
 }
@@ -541,8 +547,8 @@ const EMOJIS  = {1:'🟥',2:'🟨',3:'🟩',4:'🟪'};
 const boardEl = document.getElementById('board');
 const $ = id => document.getElementById(id);
 
-let tiles=[], par=0, swipes=0, history=[], nextId=1, busy=false, won=false;
-let mode='daily', seed=0, friendCode=null, practiceDiff='medium';
+let tiles=[], par=0, swipes=0, history=[], nextId=1, busy=false, won=false, moveLog=[];
+let mode='daily', seed=0, friendCode=null, practiceDiff='medium', friendTier='medium';
 const bests = {};   // seed -> best swipe count (this session)
 
 // background grid cells
@@ -559,14 +565,16 @@ function dayIndex(){
   return Math.floor((now - epoch - (now.getTimezoneOffset()-epoch.getTimezoneOffset())*60000)/86400000);
 }
 const dailySeed = ()=> 1000000 + dayIndex();
-const codeToSeed = code => 2000000 + parseInt(code,36);
-const randCode = ()=> Math.floor(Math.random()*Math.pow(36,4)).toString(36).toUpperCase().padStart(4,'0');
+const TIER_LETTER = {easy:'E', medium:'M', hard:'H', brutal:'B'};
+const LETTER_TIER = {E:'easy', M:'medium', H:'hard', B:'brutal'};
+const codeToSeed = code => 2000000 + parseInt(code.slice(1),36);   // first char = tier letter
+const randCode = tier => TIER_LETTER[tier] + Math.floor(Math.random()*Math.pow(36,4)).toString(36).toUpperCase().padStart(4,'0');
 
 function dailyWeekday(){ return new Date(2026,0,1+dayIndex()).getDay(); }
 function currentDiff(){
   if(mode==='daily') return RAMP[dailyWeekday()];
   if(mode==='practice') return PRACTICE_TIERS[practiceDiff];
-  return PRACTICE_DIFF;   // friend boards: fixed spec so a code means the same board everywhere
+  return PRACTICE_TIERS[friendTier];   // friend boards: tier travels inside the code itself
 }
 
 function puzzleName(){
@@ -584,7 +592,7 @@ function loadPuzzle(){
     const gen = makePuzzle(seed, currentDiff());
     tiles=[]; nextId=1;
     for(let i=0;i<N*N;i++) if(gen.board[i]) tiles.push({id:nextId++, r:Math.floor(i/N), c:i%N, colour:gen.board[i]});
-    par=gen.par; swipes=0; history=[]; busy=false;
+    par=gen.par; swipes=0; history=[]; moveLog=[]; busy=false;
     $('loader').classList.remove('show');
     renderAll(true);
     updateStats();
@@ -616,12 +624,8 @@ function positionTiles(){
 const DIFF_COLOUR = {Gentle:'--c2', Mild:'--c2', Easy:'--c2', Medium:'--c3', Tricky:'--c3', Tough:'--c4', Spicy:'--c4', Hard:'--c4', Brutal:'--c1'};
 function updateStats(){
   const dot=$('dLevel');
-  if(mode==='friend'){ dot.classList.add('off'); }
-  else {
-    dot.classList.remove('off');
-    const cv=DIFF_COLOUR[currentDiff().name] || '--c3';
-    dot.style.background='var('+cv+')';
-  }
+  dot.classList.remove('off');
+  dot.style.background='var('+(DIFF_COLOUR[currentDiff().name]||'--c3')+')';
   $('swipes').textContent=swipes;
   $('par').textContent=par;
   $('best').textContent = bests[seed] != null ? bests[seed] : '–';
@@ -663,12 +667,15 @@ async function doMove(dir){
   busy=true;
   history.push(snapshot());
   let cascade=0;
+  const swipeGroups=[];
   if(slideTiles(tiles,dir)){ positionTiles(); blip(150,.06,'triangle',.06); await sleep(SLIDE_MS); }
   while(true){
-    const pops=popGroups(tiles);
-    if(!pops.length) break;
+    const groups=popGroups(tiles);
+    if(!groups.length) break;
     cascade++;
     blip(420+cascade*140,.12,'sine',.14);
+    const pops=groups.flat();
+    for(const g of groups) swipeGroups.push(g[0].colour);
     for(const t of pops){
       const el=boardEl.querySelector(`.tile[data-id="${t.id}"]`);
       if(el) el.classList.add('popping');
@@ -680,6 +687,7 @@ async function doMove(dir){
     for(const id of ids){ const el=boardEl.querySelector(`.tile[data-id="${id}"]`); if(el) el.remove(); }
     if(slideTiles(tiles,dir)){ positionTiles(); await sleep(SLIDE_MS); }
   }
+  moveLog.push(swipeGroups);
   swipes++; busy=false;
   updateStats();
   if(!tiles.length){ win(); return; }
@@ -698,7 +706,9 @@ function win(){
   updateStats();
   blip(523,.12); setTimeout(()=>blip(659,.12),110); setTimeout(()=>blip(784,.2),220);
   const diff=swipes-par;
-  $('winEmoji').textContent = diff<=0 ? '🏆' : diff===1 ? '⭐' : '✅';
+  const stamp=$('winEmoji');
+  stamp.textContent = diff<=0 ? 'PAR!' : 'PAR+'+diff;
+  stamp.style.color = diff<=0 ? 'var(--c1)' : diff===1 ? 'var(--c2)' : 'var(--c3)';
   $('winTitle').textContent = diff<=0 ? 'Perfect!' : diff===1 ? 'So close!' : 'Cleared!';
   $('winSub').textContent = `${swipes} swipe${swipes===1?'':'s'} · par ${par}`;
   $('winNext').textContent = mode==='daily' ? 'Try practice mode' : 'New board';
@@ -709,10 +719,20 @@ function shareText(){
   const diff=swipes-par;
   const medal = won ? (diff<=0?'🏆':diff===1?'⭐':'✅') : '🎯';
   const result = won ? `cleared in ${swipes} swipes (par ${par}) ${medal}` : `par is ${par} — think you can match it?`;
-  const colours=[...new Set(tilesToFlat(tiles).filter(v=>v))].map(c=>EMOJIS[c]).join('') || '🩷🟡🔵';
-  if(mode==='daily')  return `Flummox #${dayIndex()+1} (${RAMP[dailyWeekday()].name}) ${colours}\nI ${won?result:'am stuck — '+result}`;
-  if(mode==='friend') return `Flummox challenge — code ${friendCode} ${colours}\nI ${won?result:result}\nEnter the code in Flummox and beat me!`;
-  return `Flummox practice ${colours}\nI ${won?result:result}`;
+  const grid = moveLog.length
+    ? '\n'+moveLog.map(e=> e==='U' ? '↩️' : (e.length ? e.map(c=>EMOJIS[c]).join('') : '⬛')).join('\n')
+    : '';
+  if(mode==='daily')  return `Flummox #${dayIndex()+1} (${RAMP[dailyWeekday()].name})\nI ${won?result:'am stuck — '+result}${grid}`;
+  if(mode==='friend') return `Flummox challenge — code ${friendCode}\nI ${won?result:result}\nEnter the code in Flummox and beat me!${grid}`;
+  return `Flummox practice\nI ${won?result:result}${grid}`;
+}
+async function doShare(){
+  const text=shareText();
+  if(navigator.share){
+    try{ await navigator.share({text}); return; }
+    catch(e){ if(e && e.name==='AbortError') return; }   // user closed the sheet — fine
+  }
+  copy(text, 'Result copied — paste it anywhere');
 }
 async function copy(text, msg){
   try{ await navigator.clipboard.writeText(text); toast(msg); }
@@ -738,23 +758,27 @@ function setMode(m){
   for(const id of ['daily','practice','friend'])
     $('tab-'+id).setAttribute('aria-selected', id===m ? 'true':'false');
   $('friendPanel').classList.toggle('show', m==='friend');
-  $('diffBar').classList.toggle('show', m==='practice');
+  $('diffBar').classList.toggle('show', m==='practice' || m==='friend');
   if(m==='daily') seed=dailySeed();
   else if(m==='practice') seed=4000000+Math.floor(Math.random()*900000);
-  else { if(!friendCode) friendCode=randCode(); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); }
+  else { if(!friendCode) friendCode=randCode(friendTier); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); }
+  syncDiffBar();
   loadPuzzle();
 }
 $('tab-daily').onclick   = ()=>setMode('daily');
 $('tab-practice').onclick= ()=>setMode('practice');
 $('tab-friend').onclick  = ()=>setMode('friend');
 
-$('newCode').onclick = ()=>{ friendCode=randCode(); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); loadPuzzle(); };
+$('newCode').onclick = ()=>{ if(busy) return; friendCode=randCode(friendTier); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); loadPuzzle(); };
 $('copyInvite').onclick = ()=> copy(`Race me on Flummox! Open the Friends tab and enter code ${friendCode} — fewest swipes wins.`, 'Invite copied');
 $('playCode').onclick = ()=>{
+  if(busy) return;
   const v=$('codeInput').value.trim().toUpperCase();
-  if(!/^[0-9A-Z]{4}$/.test(v)){ toast('Codes are 4 letters/numbers'); return; }
-  friendCode=v; $('myCode').textContent=v; seed=codeToSeed(v); loadPuzzle();
-  toast('Friend board loaded — fewest swipes wins');
+  if(!/^[EMHB][0-9A-Z]{4}$/.test(v)){ toast('Codes look like M7K3Q — difficulty letter then 4 characters'); return; }
+  friendCode=v; friendTier=LETTER_TIER[v[0]];
+  $('myCode').textContent=v; seed=codeToSeed(v);
+  syncDiffBar(); loadPuzzle();
+  toast(PRACTICE_TIERS[friendTier].name+' board loaded — fewest swipes wins');
 };
 $('codeInput').addEventListener('keydown', e=>{ if(e.key==='Enter') $('playCode').click(); });
 
@@ -762,40 +786,49 @@ $('codeInput').addEventListener('keydown', e=>{ if(e.key==='Enter') $('playCode'
 $('undoBtn').onclick = ()=>{
   if(!history.length || busy) return;
   tiles=history.pop(); swipes++;        // undo costs a swipe — keeps par honest
+  moveLog.push('U');
   renderAll(false); updateStats();
   toast('Undone (+1 swipe)');
 };
 $('restartBtn').onclick = ()=>{ if(busy) return; loadPuzzle(); };
-$('shareBtn').onclick = ()=> copy(shareText(), 'Result copied — paste it anywhere');
-$('winShare').onclick = ()=> copy(shareText(), 'Result copied — paste it anywhere');
+$('shareBtn').onclick = ()=> doShare();
+$('winShare').onclick = ()=> doShare();
 $('winNext').onclick = ()=>{
   $('overlay').classList.remove('show');
   if(mode==='daily') setMode('practice');
   else if(mode==='practice') setMode('practice');
-  else { friendCode=randCode(); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); loadPuzzle(); }
+  else { friendCode=randCode(friendTier); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); loadPuzzle(); }
 };
 $('overlay').onclick = e=>{ if(e.target===$('overlay')) $('overlay').classList.remove('show'); };
-$('soundBtn').onclick = ()=>{ soundOn=!soundOn; $('soundBtn').textContent=soundOn?'🔊':'🔇'; };
+const SPK_ON  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const SPK_OFF = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><line x1="15" y1="9" x2="21" y2="15"/><line x1="21" y1="9" x2="15" y2="15"/></svg>';
+function paintSound(){ $('soundBtn').innerHTML = soundOn?SPK_ON:SPK_OFF; $('soundBtn').setAttribute('aria-pressed', soundOn); $('soundBtn').style.color = soundOn?'var(--ink)':'var(--faint)'; }
+$('soundBtn').onclick = ()=>{ soundOn=!soundOn; paintSound(); };
+paintSound();
 
 // practice difficulty
 function syncDiffBar(){
+  const active = mode==='friend' ? friendTier : practiceDiff;
   for(const b of document.querySelectorAll('.diff[data-d]'))
-    b.setAttribute('aria-checked', b.dataset.d===practiceDiff ? 'true':'false');
+    b.setAttribute('aria-checked', b.dataset.d===active ? 'true':'false');
 }
 for(const b of document.querySelectorAll('.diff[data-d]')){
   b.onclick=()=>{
     if(busy) return;
-    practiceDiff=b.dataset.d; syncDiffBar();
-    seed=4000000+Math.floor(Math.random()*900000);
+    if(mode==='friend'){
+      friendTier=b.dataset.d;
+      friendCode=randCode(friendTier);
+      $('myCode').textContent=friendCode;
+      seed=codeToSeed(friendCode);
+    } else {
+      if(practiceDiff===b.dataset.d) toast('New '+PRACTICE_TIERS[practiceDiff].name.toLowerCase()+' board');
+      practiceDiff=b.dataset.d;
+      seed=4000000+Math.floor(Math.random()*900000);
+    }
+    syncDiffBar();
     loadPuzzle();
   };
 }
-$('newBoard').onclick=()=>{
-  if(busy) return;
-  seed=4000000+Math.floor(Math.random()*900000);
-  loadPuzzle();
-  toast('New '+PRACTICE_TIERS[practiceDiff].name.toLowerCase()+' board');
-};
 syncDiffBar();
 
 // keyboard
@@ -816,9 +849,18 @@ boardEl.addEventListener('pointerup', e=>{
 });
 boardEl.addEventListener('touchmove', e=>e.preventDefault(), {passive:false});
 
+/* help overlay */
+let helpSeen=false;   // native app: persist this flag; here it lives for the session
+function openHelp(){ $('helpOverlay').classList.add('show'); }
+function closeHelp(){ $('helpOverlay').classList.remove('show'); helpSeen=true; boardEl.focus(); }
+$('helpBtn').onclick=openHelp;
+$('helpOk').onclick=closeHelp;
+$('helpOverlay').onclick=e=>{ if(e.target===$('helpOverlay')) closeHelp(); };
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('helpOverlay').classList.contains('show')) closeHelp(); });
+
 /* boot */
 setMode('daily');
-boardEl.focus();
+if(!helpSeen) openHelp();
 </script>
 </body>
 </html>

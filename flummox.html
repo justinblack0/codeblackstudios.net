@@ -54,7 +54,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 }
 .tab[aria-selected="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
 
-/* practice difficulty bar */
+/* difficulty bar */
 .diffbar{ display:none; gap:6px; }
 .diffbar.show{ display:flex; }
 .diff{
@@ -242,11 +242,10 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 
   <div class="tabs" role="tablist" aria-label="Game mode">
     <button class="tab" role="tab" id="tab-daily" aria-selected="true">Daily</button>
-    <button class="tab" role="tab" id="tab-practice" aria-selected="false">Practice</button>
-    <button class="tab" role="tab" id="tab-friend" aria-selected="false">Friends</button>
+    <button class="tab" role="tab" id="tab-friend" aria-selected="false">Play &amp; Share</button>
   </div>
 
-  <div class="diffbar" id="diffBar" role="radiogroup" aria-label="Practice difficulty">
+  <div class="diffbar" id="diffBar" role="radiogroup" aria-label="Board difficulty">
     <button class="diff" data-d="easy">easy</button>
     <button class="diff" data-d="medium">medium</button>
     <button class="diff" data-d="hard">hard</button>
@@ -462,7 +461,6 @@ const RAMP = {
   6:{name:'Spicy',  colours:4, countMin:4, countMax:5, minPar:7, maxPar:8, candidates:6, nodes:50000},
   0:{name:'Brutal', colours:4, countMin:4, countMax:5, minPar:7, maxPar:8, candidates:5, nodes:50000},
 };
-const PRACTICE_DIFF = {name:'Practice', colours:4, countMin:3, countMax:5, minPar:5, maxPar:7, candidates:4, nodes:40000}; // friend codes stay pinned to this so codes are stable
 const PRACTICE_TIERS = {
   easy:  {name:'Easy',   colours:3, countMin:3, countMax:4, minPar:3, maxPar:4, candidates:4, nodes:20000},
   medium:{name:'Medium', colours:4, countMin:3, countMax:4, minPar:5, maxPar:6, candidates:4, nodes:30000},
@@ -548,7 +546,7 @@ const boardEl = document.getElementById('board');
 const $ = id => document.getElementById(id);
 
 let tiles=[], par=0, swipes=0, history=[], nextId=1, busy=false, won=false, moveLog=[];
-let mode='daily', seed=0, friendCode=null, practiceDiff='medium', friendTier='medium';
+let mode='daily', seed=0, friendCode=null, friendTier='medium';
 const bests = {};   // seed -> best swipe count (this session)
 
 // background grid cells
@@ -573,14 +571,12 @@ const randCode = tier => TIER_LETTER[tier] + Math.floor(Math.random()*Math.pow(3
 function dailyWeekday(){ return new Date(2026,0,1+dayIndex()).getDay(); }
 function currentDiff(){
   if(mode==='daily') return RAMP[dailyWeekday()];
-  if(mode==='practice') return PRACTICE_TIERS[practiceDiff];
-  return PRACTICE_TIERS[friendTier];   // friend boards: tier travels inside the code itself
+  return PRACTICE_TIERS[friendTier];   // board tier travels inside the code itself
 }
 
 function puzzleName(){
   if(mode==='daily') return 'Daily #'+(dayIndex()+1)+' · '+RAMP[dailyWeekday()].name;
-  if(mode==='friend') return 'Code '+friendCode;
-  return 'Practice · '+PRACTICE_TIERS[practiceDiff].name;
+  return 'Code '+friendCode;
 }
 
 function loadPuzzle(){
@@ -711,7 +707,7 @@ function win(){
   stamp.style.color = diff<=0 ? 'var(--c1)' : diff===1 ? 'var(--c2)' : 'var(--c3)';
   $('winTitle').textContent = diff<=0 ? 'Perfect!' : diff===1 ? 'So close!' : 'Cleared!';
   $('winSub').textContent = `${swipes} swipe${swipes===1?'':'s'} · par ${par}`;
-  $('winNext').textContent = mode==='daily' ? 'Try practice mode' : 'New board';
+  $('winNext').textContent = mode==='daily' ? 'Play more boards' : 'New board';
   setTimeout(()=>$('overlay').classList.add('show'), 350);
 }
 
@@ -722,9 +718,8 @@ function shareText(){
   const grid = moveLog.length
     ? '\n'+moveLog.map(e=> e==='U' ? '↩️' : (e.length ? e.map(c=>EMOJIS[c]).join('') : '⬛')).join('\n')
     : '';
-  if(mode==='daily')  return `Flummox #${dayIndex()+1} (${RAMP[dailyWeekday()].name})\nI ${won?result:'am stuck — '+result}${grid}`;
-  if(mode==='friend') return `Flummox challenge — code ${friendCode}\nI ${won?result:result}\nEnter the code in Flummox and beat me!${grid}`;
-  return `Flummox practice\nI ${won?result:result}${grid}`;
+  if(mode==='daily') return `Flummox #${dayIndex()+1} (${RAMP[dailyWeekday()].name})\nI ${won?result:'am stuck — '+result}${grid}`;
+  return `Flummox challenge — code ${friendCode}\nI ${won?result:result}\nEnter the code in Flummox and beat me!${grid}`;
 }
 async function doShare(){
   const text=shareText();
@@ -755,19 +750,17 @@ function toast(msg){
 /* ============ MODES ============ */
 function setMode(m){
   mode=m;
-  for(const id of ['daily','practice','friend'])
+  for(const id of ['daily','friend'])
     $('tab-'+id).setAttribute('aria-selected', id===m ? 'true':'false');
   $('friendPanel').classList.toggle('show', m==='friend');
-  $('diffBar').classList.toggle('show', m==='practice' || m==='friend');
+  $('diffBar').classList.toggle('show', m==='friend');
   if(m==='daily') seed=dailySeed();
-  else if(m==='practice') seed=4000000+Math.floor(Math.random()*900000);
   else { if(!friendCode) friendCode=randCode(friendTier); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); }
   syncDiffBar();
   loadPuzzle();
 }
-$('tab-daily').onclick   = ()=>setMode('daily');
-$('tab-practice').onclick= ()=>setMode('practice');
-$('tab-friend').onclick  = ()=>setMode('friend');
+$('tab-daily').onclick  = ()=>setMode('daily');
+$('tab-friend').onclick = ()=>setMode('friend');
 
 $('newCode').onclick = ()=>{ if(busy) return; friendCode=randCode(friendTier); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); loadPuzzle(); };
 $('copyInvite').onclick = ()=> copy(`Race me on Flummox! Open the Friends tab and enter code ${friendCode} — fewest swipes wins.`, 'Invite copied');
@@ -795,8 +788,7 @@ $('shareBtn').onclick = ()=> doShare();
 $('winShare').onclick = ()=> doShare();
 $('winNext').onclick = ()=>{
   $('overlay').classList.remove('show');
-  if(mode==='daily') setMode('practice');
-  else if(mode==='practice') setMode('practice');
+  if(mode==='daily') setMode('friend');
   else { friendCode=randCode(friendTier); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); loadPuzzle(); }
 };
 $('overlay').onclick = e=>{ if(e.target===$('overlay')) $('overlay').classList.remove('show'); };
@@ -806,25 +798,19 @@ function paintSound(){ $('soundBtn').innerHTML = soundOn?SPK_ON:SPK_OFF; $('soun
 $('soundBtn').onclick = ()=>{ soundOn=!soundOn; paintSound(); };
 paintSound();
 
-// practice difficulty
+// difficulty bar
 function syncDiffBar(){
-  const active = mode==='friend' ? friendTier : practiceDiff;
   for(const b of document.querySelectorAll('.diff[data-d]'))
-    b.setAttribute('aria-checked', b.dataset.d===active ? 'true':'false');
+    b.setAttribute('aria-checked', b.dataset.d===friendTier ? 'true':'false');
 }
 for(const b of document.querySelectorAll('.diff[data-d]')){
   b.onclick=()=>{
     if(busy) return;
-    if(mode==='friend'){
-      friendTier=b.dataset.d;
-      friendCode=randCode(friendTier);
-      $('myCode').textContent=friendCode;
-      seed=codeToSeed(friendCode);
-    } else {
-      if(practiceDiff===b.dataset.d) toast('New '+PRACTICE_TIERS[practiceDiff].name.toLowerCase()+' board');
-      practiceDiff=b.dataset.d;
-      seed=4000000+Math.floor(Math.random()*900000);
-    }
+    if(friendTier===b.dataset.d) toast('New '+PRACTICE_TIERS[friendTier].name.toLowerCase()+' board');
+    friendTier=b.dataset.d;
+    friendCode=randCode(friendTier);
+    $('myCode').textContent=friendCode;
+    seed=codeToSeed(friendCode);
     syncDiffBar();
     loadPuzzle();
   };

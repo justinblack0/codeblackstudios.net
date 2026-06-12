@@ -281,6 +281,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .lb-row:last-child{ border-bottom:0; }
 .lb-av{ width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.82rem; color:rgba(0,0,0,.5); flex:0 0 auto; box-shadow:2px 2px 0 var(--shadow); }
 .lb-name{ flex:1; font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.lb-row.me .lb-name{ font-weight:700; }
 .lb-medal{ width:18px; text-align:center; font-size:.85rem; flex:0 0 auto; }
 .lb-result{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; font-weight:700; letter-spacing:.03em; flex:0 0 auto; }
 .lb-pending{ font-family:'IBM Plex Mono',monospace; font-size:.62rem; color:var(--faint); flex:0 0 auto; }
@@ -1115,8 +1116,8 @@ function buildEditor(){
     `<button class="opt" data-c="${c}" style="background:var(--c${c})" aria-pressed="${c===profile.c}" aria-label="Avatar colour ${c}">${cur}</button>`).join('');
   $('editGlyphs').innerHTML=AVATAR_GLYPHS.map((sym,i)=>
     `<button class="opt" data-g="${i+1}" aria-pressed="${i+1===profile.g}" aria-label="Avatar icon ${i+1}">${sym}</button>`).join('');
-  for(const b of $('editColours').querySelectorAll('[data-c]')) b.onclick=()=>{ profile.c=+b.dataset.c; saveProfile(); renderStats(); buildEditor(); sbSyncProfile(); };
-  for(const b of $('editGlyphs').querySelectorAll('[data-g]'))  b.onclick=()=>{ profile.g=+b.dataset.g; saveProfile(); renderStats(); buildEditor(); sbSyncProfile(); };
+  for(const b of $('editColours').querySelectorAll('[data-c]')) b.onclick=()=>{ profile.c=+b.dataset.c; profile.avatarSet=true; saveProfile(); renderStats(); buildEditor(); sbSyncProfile(); };
+  for(const b of $('editGlyphs').querySelectorAll('[data-g]'))  b.onclick=()=>{ profile.g=+b.dataset.g; profile.avatarSet=true; saveProfile(); renderStats(); buildEditor(); sbSyncProfile(); };
 }
 
 function showPane(which){
@@ -1167,6 +1168,10 @@ async function sbInit(){
     }
     sbUser = session && session.user;
     if(!sbUser) return;
+    // give new / un-customised players a varied default tile derived from their id
+    if(!profile.avatarSet && profile.c===1 && profile.g===1){
+      const a = avatarFromId(sbUser.id); profile.c=a.c; profile.g=a.g; saveProfile(); renderPic($('profileBtn'));
+    }
     await sbSyncProfile();
     await sbBackfillResults();
     const ip = new URLSearchParams(location.search).get('invite');   // deep-link claim (?invite=token)
@@ -1198,6 +1203,9 @@ async function sbBackfillResults(){
 }
 
 function escapeHtml(s){ return String(s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function selfName(){ const n=(profile.name||'').trim(); return n || 'You'; }   // your own name, "You" only until you set one
+// deterministic default tile from the user id, so new players vary instead of all starting on vermilion ●
+function avatarFromId(id){ let h=0; for(let i=0;i<id.length;i++) h=(h*31 + id.charCodeAt(i))>>>0; return { c:(h%4)+1, g:((h>>>3)%12)+1 }; }
 
 // ---- friend invites ----
 async function doInvite(){
@@ -1257,7 +1265,7 @@ function renderDailyBoard(rows, iPlayed, friendCount){
   const body = rows.map(row=>{
     const { p, r, me } = row;
     const av = `<span class="lb-av" style="background:var(--c${p.avatar_colour||1})">${avGlyph(p.avatar_glyph)}</span>`;
-    const name = `<span class="lb-name">${me ? 'You' : escapeHtml(p.display_name||'Flummox player')}</span>`;
+    const name = `<span class="lb-name">${escapeHtml(me ? selfName() : (p.display_name||'Flummox player'))}</span>`;
     let medal='', result;
     if(r){
       const o = r.score_over_par, col = o<=0?'--c1':o===1?'--c2':o===2?'--c3':'--c4';
@@ -1316,7 +1324,7 @@ function renderWeeklyBoard(d){
   let h = `<div class="wk-title">Round ${d.round} · this week</div>`;
   h += `<div class="wk-days">` + dayMeta.map(m=>`<span><span class="dot" style="background:var(${m.colour})"></span>${m.initial}</span>`).join('') + `</div>`;
   for(const p of players){
-    const nm = p.me ? 'You' : escapeHtml(p.prof.display_name||'Flummox player');
+    const nm = escapeHtml(p.me ? selfName() : (p.prof.display_name||'Flummox player'));
     const tot = p.scored ? (p.total===0?'E':'+'+p.total) : '–';
     h += `<div class="wk-row">`
       + `<div class="wk-name${p.me?' me':''}"><span class="lb-av" style="background:var(--c${p.prof.avatar_colour||1})">${avGlyph(p.prof.avatar_glyph)}</span><span class="nm">${nm}</span><span class="tot">${tot}</span></div>`
@@ -1324,7 +1332,7 @@ function renderWeeklyBoard(d){
       + `</div>`;
   }
   const scored = players.filter(p=>p.scored);
-  if(scored.length){ const lead = scored.reduce((a,b)=> b.total<a.total ? b : a); h += `<div class="wk-leader">🏆 leader: ${lead.me ? 'You' : escapeHtml(lead.prof.display_name||'—')} · ${lead.total===0?'E':'+'+lead.total}</div>`; }
+  if(scored.length){ const lead = scored.reduce((a,b)=> b.total<a.total ? b : a); h += `<div class="wk-leader">🏆 leader: ${escapeHtml(lead.me ? selfName() : (lead.prof.display_name||'—'))} · ${lead.total===0?'E':'+'+lead.total}</div>`; }
   else h += `<div class="wk-note">Play a day this week to start your round.</div>`;
   el.innerHTML = h;
 }

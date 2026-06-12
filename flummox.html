@@ -34,12 +34,11 @@ body::before{
 .app{ width:100%; max-width:440px; padding:20px 16px 30px; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; }
 
 /* header */
-header{ display:flex; align-items:flex-end; justify-content:space-between; }
+header{ display:flex; align-items:center; justify-content:space-between; padding-top:2px; }
 .logo{ font-weight:700; font-size:2.05rem; letter-spacing:-.03em; line-height:1; display:flex; align-items:baseline; }
 .logo .flum{ color:var(--ink); }
 .logo .m1{ color:var(--c1); } .logo .m2{ color:var(--c2); } .logo .m3{ color:var(--c3); }
 .logo .dot{ width:.34em; height:.34em; background:var(--c4); margin-left:.14em; box-shadow:2px 2px 0 var(--shadow); align-self:center; transform:translateY(.18em); }
-.tagline{ color:var(--muted); font-size:.74rem; margin-top:6px; font-family:'IBM Plex Mono',monospace; letter-spacing:.02em; }
 .iconbtn{
   font-size:1rem; width:40px; height:40px; border:1px solid var(--line);
   background:var(--panel); color:var(--ink); cursor:pointer; border-radius:var(--rad);
@@ -55,9 +54,33 @@ header{ display:flex; align-items:flex-end; justify-content:space-between; }
 }
 .tab[aria-selected="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
 
+/* practice difficulty bar */
+.diffbar{ display:none; gap:6px; }
+.diffbar.show{ display:flex; }
+.diff{
+  flex:1; border:1px solid var(--line); background:var(--panel); color:var(--muted);
+  font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
+  padding:8px 0; border-radius:var(--rad); cursor:pointer; transition:all .12s;
+}
+.diff[data-d="easy"]{ --d:var(--c2); }
+.diff[data-d="medium"]{ --d:var(--c3); }
+.diff[data-d="hard"]{ --d:var(--c4); }
+.diff[data-d="brutal"]{ --d:var(--c1); }
+.diff[data-d]::before{
+  content:""; width:7px; height:7px; background:var(--d); display:inline-block;
+  margin-right:6px; vertical-align:1px; border-radius:1px;
+}
+.diff[aria-checked="true"]{ background:var(--d); color:var(--bg); border-color:var(--d); }
+.diff[aria-checked="true"]::before{ background:var(--bg); opacity:.35; }
+.diff.newb{ flex:0 0 42px; font-size:.9rem; color:var(--ink); }
+.diff.newb:hover{ border-color:var(--muted); }
+.diff:focus-visible{ outline:2px solid var(--c3); outline-offset:1px; }
+
 /* stats */
 .stats{ display:flex; align-items:center; justify-content:space-between; padding:0 2px; min-height:36px; }
-.puzzle-label{ font-weight:700; font-size:1rem; letter-spacing:-.01em; }
+.puzzle-label{ font-weight:700; font-size:1rem; letter-spacing:-.01em; display:flex; align-items:center; gap:8px; }
+.dlevel{ width:9px; height:9px; border-radius:1px; box-shadow:2px 2px 0 var(--shadow); flex:0 0 auto; }
+.dlevel.off{ display:none; }
 .counters{ display:flex; gap:16px; }
 .counter{ text-align:right; }
 .counter b{ font-family:'IBM Plex Mono',monospace; font-size:1.2rem; font-weight:700; display:block; line-height:1; }
@@ -132,23 +155,39 @@ header{ display:flex; align-items:flex-end; justify-content:space-between; }
 
 /* friend panel */
 .friend{
-  display:none; flex-direction:column; gap:10px; background:var(--panel);
-  border:1px solid var(--line); border-radius:12px; padding:14px;
+  display:none; gap:12px; background:var(--panel);
+  border:1px solid var(--line); border-radius:12px; padding:12px 14px 14px;
 }
 .friend.show{ display:flex; }
-.friend h2{ font-weight:700; font-size:.95rem; letter-spacing:-.01em; }
-.code-big{
-  font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:1.7rem; letter-spacing:.4em;
-  text-align:center; padding:9px 0 9px .4em; background:var(--bg); border:1px solid var(--line); border-radius:var(--rad);
+.fcol{ flex:1; min-width:0; display:flex; flex-direction:column; gap:7px; }
+.flabel{
+  font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.62rem;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--faint);
+  text-align:center; width:calc(100% - 52px);   /* centred over the box, excluding the 44px icon + 8px gap */
 }
-.friend .row{ display:flex; gap:8px; }
+.codebox{
+  flex:1; min-width:0; height:44px; display:flex; align-items:center; justify-content:center; gap:8px;
+  font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:1.05rem; letter-spacing:.22em;
+  color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:var(--rad);
+  cursor:pointer; transition:border-color .12s; padding-left:.22em;
+}
+.codebox:hover{ border-color:var(--muted); }
+.codebox .cglyph{ font-size:.8rem; color:var(--faint); letter-spacing:0; }
+.icobtn{
+  flex:0 0 44px; height:44px; border:1px solid var(--line); background:var(--panel2); color:var(--ink);
+  border-radius:var(--rad); cursor:pointer; font-size:.95rem; transition:border-color .12s;
+}
+.icobtn:hover{ border-color:var(--muted); }
+.icobtn.play{ color:var(--c3); }
+.icobtn:focus-visible,.codebox:focus-visible{ outline:2px solid var(--c3); outline-offset:1px; }
+.friend .row{ display:flex; gap:8px; align-items:center; }
 .friend input{
-  flex:1; font-family:'IBM Plex Mono',monospace; font-weight:600; letter-spacing:.3em; text-transform:uppercase; text-align:center;
-  background:var(--bg); border:1px solid var(--line); border-radius:var(--rad);
-  color:var(--ink); padding:11px; min-width:0; font-size:.95rem;
+  flex:1; min-width:0; height:44px; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:1.05rem;
+  letter-spacing:.22em; text-transform:uppercase; text-align:center;
+  background:var(--bg); border:1px dashed var(--line); border-radius:var(--rad); color:var(--ink); padding:0 8px;
 }
+.friend input::placeholder{ font-size:.72rem; letter-spacing:.08em; font-weight:600; color:var(--faint); }
 .friend input:focus-visible{ outline:2px solid var(--c3); }
-.hint{ color:var(--muted); font-size:.78rem; line-height:1.5; }
 
 /* how to play */
 details{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:13px 15px; }
@@ -193,7 +232,6 @@ details b{ color:var(--ink); font-weight:600; }
   <header>
     <div>
       <div class="logo"><span class="flum">flum</span><span class="m1">m</span><span class="m2">o</span><span class="m3">x</span><span class="dot"></span></div>
-      <div class="tagline">swipe. slide. get flummoxed.</div>
     </div>
     <button class="iconbtn" id="soundBtn" aria-label="Toggle sound">🔊</button>
   </header>
@@ -204,22 +242,35 @@ details b{ color:var(--ink); font-weight:600; }
     <button class="tab" role="tab" id="tab-friend" aria-selected="false">Friends</button>
   </div>
 
+  <div class="diffbar" id="diffBar" role="radiogroup" aria-label="Practice difficulty">
+    <button class="diff" data-d="easy">easy</button>
+    <button class="diff" data-d="medium">medium</button>
+    <button class="diff" data-d="hard">hard</button>
+    <button class="diff" data-d="brutal">brutal</button>
+    <button class="diff newb" id="newBoard" aria-label="New board" title="New board">&#8635;</button>
+  </div>
+
   <div class="friend" id="friendPanel">
-    <h2>Challenge a friend</h2>
-    <div class="code-big" id="myCode">····</div>
-    <div class="row">
-      <button class="btn" id="copyInvite">Copy invite</button>
-      <button class="btn" id="newCode">New board</button>
+    <div class="fcol">
+      <span class="flabel">This game</span>
+      <div class="row">
+        <button class="codebox" id="copyInvite" aria-label="Copy invite with your board code" title="Copy invite">
+          <span id="myCode">····</span><span class="cglyph">&#10064;</span>
+        </button>
+        <button class="icobtn" id="newCode" aria-label="New board" title="New board">&#8635;</button>
+      </div>
     </div>
-    <div class="row">
-      <input id="codeInput" maxlength="4" placeholder="CODE" autocomplete="off" aria-label="Enter a friend's code">
-      <button class="btn" id="playCode" style="flex:0 0 92px">Play it</button>
+    <div class="fcol">
+      <span class="flabel">Friend's game</span>
+      <div class="row">
+        <input id="codeInput" maxlength="4" placeholder="enter code" autocomplete="off" aria-label="Enter a friend's code">
+        <button class="icobtn play" id="playCode" aria-label="Play entered code" title="Play">&#9654;</button>
+      </div>
     </div>
-    <div class="hint">You both play the exact same board — fewest swipes wins.</div>
   </div>
 
   <div class="stats">
-    <div class="puzzle-label" id="puzzleLabel">Daily</div>
+    <div class="puzzle-label"><span class="dlevel" id="dLevel"></span><span id="puzzleLabel">Daily</span></div>
     <div class="counters">
       <div class="counter"><b id="swipes">0</b><span>swipes</span></div>
       <div class="counter"><b id="par">–</b><span>par</span></div>
@@ -405,7 +456,13 @@ const RAMP = {
   6:{name:'Spicy',  colours:4, countMin:4, countMax:5, minPar:7, maxPar:8, candidates:6, nodes:50000},
   0:{name:'Brutal', colours:4, countMin:4, countMax:5, minPar:7, maxPar:8, candidates:5, nodes:50000},
 };
-const PRACTICE_DIFF = {name:'Practice', colours:4, countMin:3, countMax:5, minPar:5, maxPar:7, candidates:4, nodes:40000};
+const PRACTICE_DIFF = {name:'Practice', colours:4, countMin:3, countMax:5, minPar:5, maxPar:7, candidates:4, nodes:40000}; // friend codes stay pinned to this so codes are stable
+const PRACTICE_TIERS = {
+  easy:  {name:'Easy',   colours:3, countMin:3, countMax:4, minPar:3, maxPar:4, candidates:4, nodes:20000},
+  medium:{name:'Medium', colours:4, countMin:3, countMax:4, minPar:5, maxPar:6, candidates:4, nodes:30000},
+  hard:  {name:'Hard',   colours:4, countMin:3, countMax:5, minPar:6, maxPar:7, candidates:5, nodes:40000},
+  brutal:{name:'Brutal', colours:4, countMin:4, countMax:5, minPar:7, maxPar:8, candidates:5, nodes:50000},
+};
 // pick the most deceptive of several deterministic candidates; degrade par gently if needed
 function makePuzzle(seed, diff){
   let spec={...diff};
@@ -485,7 +542,7 @@ const boardEl = document.getElementById('board');
 const $ = id => document.getElementById(id);
 
 let tiles=[], par=0, swipes=0, history=[], nextId=1, busy=false, won=false;
-let mode='daily', seed=0, friendCode=null;
+let mode='daily', seed=0, friendCode=null, practiceDiff='medium';
 const bests = {};   // seed -> best swipe count (this session)
 
 // background grid cells
@@ -506,12 +563,16 @@ const codeToSeed = code => 2000000 + parseInt(code,36);
 const randCode = ()=> Math.floor(Math.random()*Math.pow(36,4)).toString(36).toUpperCase().padStart(4,'0');
 
 function dailyWeekday(){ return new Date(2026,0,1+dayIndex()).getDay(); }
-function currentDiff(){ return mode==='daily' ? RAMP[dailyWeekday()] : PRACTICE_DIFF; }
+function currentDiff(){
+  if(mode==='daily') return RAMP[dailyWeekday()];
+  if(mode==='practice') return PRACTICE_TIERS[practiceDiff];
+  return PRACTICE_DIFF;   // friend boards: fixed spec so a code means the same board everywhere
+}
 
 function puzzleName(){
   if(mode==='daily') return 'Daily #'+(dayIndex()+1)+' · '+RAMP[dailyWeekday()].name;
   if(mode==='friend') return 'Code '+friendCode;
-  return 'Practice';
+  return 'Practice · '+PRACTICE_TIERS[practiceDiff].name;
 }
 
 function loadPuzzle(){
@@ -552,7 +613,15 @@ function positionTiles(){
     if(el){ el.style.setProperty('--r',t.r); el.style.setProperty('--c',t.c); }
   }
 }
+const DIFF_COLOUR = {Gentle:'--c2', Mild:'--c2', Easy:'--c2', Medium:'--c3', Tricky:'--c3', Tough:'--c4', Spicy:'--c4', Hard:'--c4', Brutal:'--c1'};
 function updateStats(){
+  const dot=$('dLevel');
+  if(mode==='friend'){ dot.classList.add('off'); }
+  else {
+    dot.classList.remove('off');
+    const cv=DIFF_COLOUR[currentDiff().name] || '--c3';
+    dot.style.background='var('+cv+')';
+  }
   $('swipes').textContent=swipes;
   $('par').textContent=par;
   $('best').textContent = bests[seed] != null ? bests[seed] : '–';
@@ -669,6 +738,7 @@ function setMode(m){
   for(const id of ['daily','practice','friend'])
     $('tab-'+id).setAttribute('aria-selected', id===m ? 'true':'false');
   $('friendPanel').classList.toggle('show', m==='friend');
+  $('diffBar').classList.toggle('show', m==='practice');
   if(m==='daily') seed=dailySeed();
   else if(m==='practice') seed=4000000+Math.floor(Math.random()*900000);
   else { if(!friendCode) friendCode=randCode(); $('myCode').textContent=friendCode; seed=codeToSeed(friendCode); }
@@ -706,6 +776,27 @@ $('winNext').onclick = ()=>{
 };
 $('overlay').onclick = e=>{ if(e.target===$('overlay')) $('overlay').classList.remove('show'); };
 $('soundBtn').onclick = ()=>{ soundOn=!soundOn; $('soundBtn').textContent=soundOn?'🔊':'🔇'; };
+
+// practice difficulty
+function syncDiffBar(){
+  for(const b of document.querySelectorAll('.diff[data-d]'))
+    b.setAttribute('aria-checked', b.dataset.d===practiceDiff ? 'true':'false');
+}
+for(const b of document.querySelectorAll('.diff[data-d]')){
+  b.onclick=()=>{
+    if(busy) return;
+    practiceDiff=b.dataset.d; syncDiffBar();
+    seed=4000000+Math.floor(Math.random()*900000);
+    loadPuzzle();
+  };
+}
+$('newBoard').onclick=()=>{
+  if(busy) return;
+  seed=4000000+Math.floor(Math.random()*900000);
+  loadPuzzle();
+  toast('New '+PRACTICE_TIERS[practiceDiff].name.toLowerCase()+' board');
+};
+syncDiffBar();
 
 // keyboard
 document.addEventListener('keydown', e=>{

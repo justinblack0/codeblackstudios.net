@@ -29,6 +29,7 @@
   --bg:#0F1115; --panel:#1F232C; --panel2:#272C37; --line:#384050;
   --ink:#EDEEF0; --muted:#8C93A0; --faint:#565D6B;
   --c1:#FF5238; --c2:#FFB330; --c3:#2EC4B6; --c4:#8E7DFF;
+  --c5:#FF5C9E; --c6:#2FAEE0;   /* avatar-only complementary colours (rose, azure); game tiles use c1–c4 */
   --shadow:#0B0C0F;
   --rad:10px;
   --slide:.15s; --pop:.18s;
@@ -65,7 +66,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .logo .m1{ color:var(--c1); } .logo .m2{ color:var(--c2); } .logo .m3{ color:var(--c3); }
 .logo .dot{ width:.34em; height:.34em; background:var(--c4); margin-left:.14em; box-shadow:2px 2px 0 var(--shadow); align-self:center; transform:translateY(.18em); }
 .iconbtn{
-  font-size:1rem; width:40px; height:40px; border:1px solid var(--line);
+  font-size:1rem; width:44px; height:44px; border:1px solid var(--line);
   background:var(--panel); color:var(--ink); cursor:pointer; border-radius:var(--rad);
 }
 .iconbtn:hover{ border-color:var(--muted); }
@@ -75,7 +76,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .tab{
   flex:1; border:1px solid var(--line); background:var(--panel); color:var(--muted);
   font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.74rem; letter-spacing:.08em; text-transform:uppercase;
-  padding:10px 0; border-radius:var(--rad); cursor:pointer; transition:all .12s;
+  padding:10px 0; min-height:44px; display:flex; align-items:center; justify-content:center; border-radius:var(--rad); cursor:pointer; transition:all .12s;
 }
 .tab[aria-selected="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
 
@@ -85,7 +86,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .diff{
   flex:1; border:1px solid var(--line); background:var(--panel); color:var(--muted);
   font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
-  padding:8px 0; border-radius:var(--rad); cursor:pointer; transition:all .12s;
+  padding:8px 0; min-height:44px; display:flex; align-items:center; justify-content:center; border-radius:var(--rad); cursor:pointer; transition:all .12s;
 }
 .diff[data-d="easy"]{ --d:var(--c2); }
 .diff[data-d="medium"]{ --d:var(--c3); }
@@ -166,7 +167,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
   flex:1; font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.74rem;
   letter-spacing:.08em; text-transform:uppercase; color:var(--ink);
   background:var(--panel); border:1px solid var(--line); border-radius:var(--rad);
-  padding:13px 0; cursor:pointer; transition:border-color .12s, transform .05s, box-shadow .05s;
+  padding:13px 0; min-height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:border-color .12s, transform .05s, box-shadow .05s;
   box-shadow:2px 2px 0 var(--shadow);
 }
 .btn:hover{ border-color:var(--muted); }
@@ -254,6 +255,8 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 
 /* profile avatar button + stats sheet */
 .iconbtn.avatar{ display:flex; align-items:center; justify-content:center; padding:0; font-size:1.05rem; }
+/* avatar/icon SVGs scale to their container and tint via currentColor */
+.iconbtn.avatar svg, .pic svg, .lb-av svg, .editrow .opt svg{ width:60%; height:60%; }
 .card.sheet{ max-width:360px; text-align:left; }
 .prof{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
 .prof .pic{ width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center;
@@ -266,7 +269,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .seg{ display:flex; gap:6px; margin:0 0 16px; }
 .seg button{ flex:1; border:1px solid var(--line); background:var(--panel2); color:var(--muted);
   font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.64rem; letter-spacing:.1em; text-transform:uppercase;
-  padding:8px 0; border-radius:var(--rad); cursor:pointer; }
+  padding:8px 0; min-height:44px; display:flex; align-items:center; justify-content:center; border-radius:var(--rad); cursor:pointer; }
 .seg button[aria-selected="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
 .segpane{ display:none; }
 .segpane.show{ display:block; }
@@ -281,9 +284,9 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .drow .dk{ width:32px; color:var(--muted); flex:0 0 auto; }
 .drow .dbar{ height:14px; min-width:3px; border-radius:2px; box-shadow:2px 2px 0 var(--shadow); transition:width .3s; }
 .drow .dn{ color:var(--muted); }
-.editrow{ display:flex; flex-wrap:wrap; gap:7px; }
-.editrow .opt{ width:34px; height:34px; border-radius:8px; border:2px solid var(--line); cursor:pointer;
-  display:flex; align-items:center; justify-content:center; font-size:1rem; }
+.editrow{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+.editrow .opt{ aspect-ratio:1; min-height:44px; border-radius:9px; border:2px solid var(--line); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
 .editrow.colours .opt{ color:rgba(0,0,0,.5); box-shadow:2px 2px 0 var(--shadow); }
 .editrow.glyphs .opt{ background:var(--panel2); color:var(--ink); }
 .editrow .opt[aria-pressed="true"]{ border-color:var(--ink); }
@@ -300,7 +303,7 @@ header{ display:flex; align-items:center; justify-content:space-between; padding
 .lb-note{ font-family:'IBM Plex Mono',monospace; font-size:.6rem; color:var(--faint); text-align:center; margin-top:12px; line-height:1.5; }
 .friend-actions{ margin-top:16px; display:flex; flex-direction:column; gap:8px; }
 .addfriend{ display:flex; gap:6px; }
-.addfriend input{ flex:1; min-width:0; background:var(--bg); border:1px dashed var(--line); border-radius:var(--rad); color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:.72rem; padding:9px 10px; }
+.addfriend input{ flex:1; min-width:0; background:var(--bg); border:1px dashed var(--line); border-radius:var(--rad); color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:.72rem; padding:9px 10px; min-height:44px; }
 .addfriend input::placeholder{ color:var(--faint); }
 .addfriend .btn{ flex:0 0 auto; padding:9px 16px; }
 /* weekly scorecard — name on its own line above each player's 7-hole strip */
@@ -1072,8 +1075,27 @@ let dailyResults = {};                // dayIndex -> {solved,swipes,par,undos,ts
 let profile = {name:'', c:1, g:1}; // name '' until the player sets one; avatar colour 1..4 + glyph into AVATAR_GLYPHS
 // Avatar icons (flat monochrome, tone-on-tone) — separate from the game's SYMBOLS so
 // expanding this never touches board tiles. First 4 match the tiles for continuity.
-const AVATAR_GLYPHS = ['●','▲','■','✕','◆','★','✦','◐','❖','✚','▬','◣']; // 12 × 4 colours = 48 combos
-const avGlyph = g => AVATAR_GLYPHS[(g||1)-1] || AVATAR_GLYPHS[0];
+const AVATAR_ICONS = [
+  '<path d="M222.83,33.54a16,16,0,0,0-18.14,3.15c-.14.14-.26.27-.38.41L187.05,57A111.28,111.28,0,0,0,69,57L51.69,37.1c-.12-.14-.24-.27-.38-.41a16,16,0,0,0-18.14-3.15A16.4,16.4,0,0,0,24,48.46V136c0,49,40.06,89.63,91.56,95.32a4,4,0,0,0,4.44-4v-32l-13.42-13.43a8.22,8.22,0,0,1-.41-11.37,8,8,0,0,1,11.49-.18L128,180.68l10.34-10.35a8,8,0,0,1,11.49.18,8.22,8.22,0,0,1-.41,11.37L136,195.31v32a4,4,0,0,0,4.44,4C191.94,225.62,232,185,232,136V48.46A16.4,16.4,0,0,0,222.83,33.54ZM84,152a12,12,0,1,1,12-12A12,12,0,0,1,84,152Zm20-64a8,8,0,1,1-16,0V69a8,8,0,0,1,16,0Zm32,0a8,8,0,1,1-16,0V64a8,8,0,0,1,16,0Zm16,0V69a8,8,0,0,1,16,0V88a8,8,0,1,1-16,0Zm20,64a12,12,0,1,1,12-12A12,12,0,0,1,172,152Z"/>',   // 1 cat
+  '<path d="M239.71,125l-16.42-88a16,16,0,0,0-19.61-12.58l-.31.09L150.85,40h-45.7L52.63,24.56l-.31-.09A16,16,0,0,0,32.71,37.05L16.29,125a15.77,15.77,0,0,0,9.12,17.52A16.26,16.26,0,0,0,32.12,144,15.48,15.48,0,0,0,40,141.84V184a40,40,0,0,0,40,40h96a40,40,0,0,0,40-40V141.85a15.5,15.5,0,0,0,7.87,2.16,16.31,16.31,0,0,0,6.72-1.47A15.77,15.77,0,0,0,239.71,125ZM176,208H136V195.31l13.66-13.65a8,8,0,0,0-11.32-11.32L128,180.69l-10.34-10.35a8,8,0,0,0-11.32,11.32L120,195.31V208H80a24,24,0,0,1-24-24V123.11L107.93,56h40.14L200,123.11V184A24,24,0,0,1,176,208Zm-72-68a12,12,0,1,1-12-12A12,12,0,0,1,104,140Zm72,0a12,12,0,1,1-12-12A12,12,0,0,1,176,140Z"/>',   // 2 dog
+  '<path d="M236.44,73.34,213.21,57.86A60,60,0,0,0,156,16h-.29C122.79,16.16,96,43.47,96,76.89V96.63L11.63,197.88l-.1.12A16,16,0,0,0,24,224h88A104.11,104.11,0,0,0,216,120V100.28l20.44-13.62a8,8,0,0,0,0-13.32ZM126.15,133.12l-60,72a8,8,0,1,1-12.29-10.24l60-72a8,8,0,1,1,12.29,10.24ZM164,80a12,12,0,1,1,12-12A12,12,0,0,1,164,80Z"/>',   // 3 bird
+  '<path d="M168,76a12,12,0,1,1-12-12A12,12,0,0,1,168,76Zm48.72,67.64c-19.37,34.9-55.44,53.76-107.24,56.1l-22,51.41A8,8,0,0,1,80.1,256l-.51,0a8,8,0,0,1-7.19-5.78L57.6,198.39,5.8,183.56a8,8,0,0,1-1-15.05l51.41-22c2.35-51.78,21.21-87.84,56.09-107.22,24.75-13.74,52.74-15.84,71.88-15.18,18.64.64,36,4.27,38.86,6a8,8,0,0,1,2.83,2.83c1.69,2.85,5.33,20.21,6,38.85C232.55,90.89,230.46,118.89,216.72,143.64Zm-4.3-100.07c-14.15-3-64.1-11-100.3,14.75a81.21,81.21,0,0,0-16,15.07,36,36,0,0,0,39.35,38.44,8,8,0,0,1,8.73,8.73,36,36,0,0,0,38.47,39.34,80.81,80.81,0,0,0,15-16C223.42,107.73,215.42,57.74,212.42,43.57Z"/>',   // 4 fish
+  '<path d="M199.28,149.8A71.58,71.58,0,0,0,193,129c19-37.94,30.45-88.28,17.34-110A22,22,0,0,0,190.94,8c-14.12,0-26,11.89-36.44,36.36-6.22,14.62-10.85,31.32-14,44.74a71.8,71.8,0,0,0-25,0c-3.13-13.42-7.76-30.12-14-44.74C91.1,19.89,79.18,8,65.06,8A22,22,0,0,0,45.64,19.08C32.53,40.76,44,91.1,63,129a71.58,71.58,0,0,0-6.26,20.76A52,52,0,1,0,128,225.52l-21.12-19.37a8,8,0,1,1,10.24-12.3L128,202.9l10.88-9.05a8,8,0,0,1,10.24,12.3L128,225.52a52,52,0,1,0,71.28-75.72Zm-126-36.53A218.45,218.45,0,0,1,58.4,67.08c-3.49-18.13-3.15-33,.93-39.72A6,6,0,0,1,65.06,24c6.61,0,14.52,9.7,21.72,26.62,5.93,13.94,10.35,30.12,13.33,43a71.72,71.72,0,0,0-26.88,19.64ZM100,176a12,12,0,1,1,12-12A12,12,0,0,1,100,176Zm56,0a12,12,0,1,1,12-12A12,12,0,0,1,156,176Zm20.55-69.17a71.89,71.89,0,0,0-20.66-13.2c3-12.89,7.4-29.07,13.33-43C176.42,33.7,184.33,24,190.94,24a6,6,0,0,1,5.73,3.36c4.08,6.74,4.42,21.59.93,39.72a218.45,218.45,0,0,1-14.83,46.19A72.6,72.6,0,0,0,176.55,106.83Z"/>',   // 5 rabbit
+  '<path d="M128,100.17a108.42,108.42,0,0,0-8-12.64V56a8,8,0,0,1,16,0V87.53A108.42,108.42,0,0,0,128,100.17ZM232.7,50.48C229,45.7,221.84,40,209,40c-16.85,0-38.46,11.28-57.81,30.16A140.07,140.07,0,0,0,136,87.53V180a8,8,0,0,1-16,0V87.53a140.07,140.07,0,0,0-15.15-17.37C85.49,51.28,63.88,40,47,40,34.16,40,27,45.7,23.3,50.48c-6.82,8.77-12.18,24.08-.21,71.2,6.05,23.83,19.51,33,30.63,36.42A44,44,0,0,0,128,205.27a44,44,0,0,0,74.28-47.17c11.12-3.4,24.57-12.59,30.63-36.42C239.63,95.24,244.85,66.1,232.7,50.48Z"/>',   // 6 butterfly
+  '<path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm8,24a64,64,0,1,0,64,64A64.07,64.07,0,0,0,128,64ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/>',   // 7 sun
+  '<path d="M240,96a8,8,0,0,1-8,8H216v16a8,8,0,0,1-16,0V104H184a8,8,0,0,1,0-16h16V72a8,8,0,0,1,16,0V88h16A8,8,0,0,1,240,96ZM144,56h8v8a8,8,0,0,0,16,0V56h8a8,8,0,0,0,0-16h-8V32a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16Zm65.14,94.33A88.07,88.07,0,0,1,105.67,46.86a8,8,0,0,0-10.6-9.06A96,96,0,1,0,218.2,160.93a8,8,0,0,0-9.06-10.6Z"/>',   // 8 moon-stars
+  '<path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"/>',   // 9 star
+  '<path d="M223.45,40.07a8,8,0,0,0-7.52-7.52C139.8,28.08,78.82,51,52.82,94a87.09,87.09,0,0,0-12.76,49A101.72,101.72,0,0,0,46.7,175.2a4,4,0,0,0,6.61,1.43l85-86.3a8,8,0,0,1,11.32,11.32L56.74,195.94,42.55,210.13a8.2,8.2,0,0,0-.6,11.1,8,8,0,0,0,11.71.43l16.79-16.79c14.14,6.84,28.41,10.57,42.56,11.07q1.67.06,3.33.06A86.93,86.93,0,0,0,162,203.18C205,177.18,227.93,116.21,223.45,40.07Z"/>',   // 10 leaf
+  '<path d="M213.85,125.46l-112,120a8,8,0,0,1-13.69-7l14.66-73.33L45.19,143.49a8,8,0,0,1-3-13l112-120a8,8,0,0,1,13.69,7L153.18,90.9l57.63,21.61a8,8,0,0,1,3,12.95Z"/>',   // 11 lightning
+  '<path d="M173.79,51.48a221.25,221.25,0,0,0-41.67-34.34,8,8,0,0,0-8.24,0A221.25,221.25,0,0,0,82.21,51.48C54.59,80.48,40,112.47,40,144a88,88,0,0,0,176,0C216,112.47,201.41,80.48,173.79,51.48ZM96,184c0-27.67,22.53-47.28,32-54.3,9.48,7,32,26.63,32,54.3a32,32,0,0,1-64,0Z"/>',   // 12 flame
+  '<path d="M152,224a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h32A8,8,0,0,1,152,224Zm71.62-68.17-12.36,55.63a16,16,0,0,1-25.51,9.11L158.51,200h-61L70.25,220.57a16,16,0,0,1-25.51-9.11L32.38,155.83a16.09,16.09,0,0,1,3.32-13.71l28.56-34.26a123.07,123.07,0,0,1,8.57-36.67c12.9-32.34,36-52.63,45.37-59.85a16,16,0,0,1,19.6,0c9.34,7.22,32.47,27.51,45.37,59.85a123.07,123.07,0,0,1,8.57,36.67l28.56,34.26A16.09,16.09,0,0,1,223.62,155.83Zm-139.23,34Q68.28,160.5,64.83,132.16L48,152.36,60.36,208l.18-.13ZM140,100a12,12,0,1,0-12,12A12,12,0,0,0,140,100Zm68,52.36-16.83-20.2q-3.42,28.28-19.56,57.69l23.85,18,.18.13Z"/>',   // 13 rocket
+  '<path d="M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z"/>',   // 14 heart
+  '<path d="M248,80a28,28,0,1,0-51.12,15.77l-26.79,33L146,73.4a28,28,0,1,0-36.06,0L85.91,128.74l-26.79-33a28,28,0,1,0-26.6,12L47,194.63A16,16,0,0,0,62.78,208H193.22A16,16,0,0,0,209,194.63l14.47-86.85A28,28,0,0,0,248,80ZM128,40a12,12,0,1,1-12,12A12,12,0,0,1,128,40ZM24,80A12,12,0,1,1,36,92,12,12,0,0,1,24,80ZM220,92a12,12,0,1,1,12-12A12,12,0,0,1,220,92Z"/>',   // 15 crown
+  '<path d="M240,128a15.85,15.85,0,0,1-4.67,11.28l-96.05,96.06a16,16,0,0,1-22.56,0h0l-96-96.06a16,16,0,0,1,0-22.56l96.05-96.06a16,16,0,0,1,22.56,0l96.05,96.06A15.85,15.85,0,0,1,240,128Z"/>',   // 16 diamond
+  '<path d="M128,24a96.11,96.11,0,0,0-96,96v96a8,8,0,0,0,13.07,6.19l24.26-19.85L93.6,222.19a8,8,0,0,0,10.13,0L128,202.34l24.27,19.85a8,8,0,0,0,10.13,0l24.27-19.85,24.26,19.85A8,8,0,0,0,224,216V120A96.11,96.11,0,0,0,128,24ZM100,128a12,12,0,1,1,12-12A12,12,0,0,1,100,128Zm56,0a12,12,0,1,1,12-12A12,12,0,0,1,156,128Z"/>',   // 17 ghost
+  '<path d="M224,144c0,38.11-27.67,45.66-49.9,51.72C149.77,202.36,136,207.31,136,232a8,8,0,0,1-16,0c0-24.69-13.77-29.64-38.1-36.28C59.67,189.66,32,182.11,32,144a8,8,0,0,1,16,0c0,24.69,13.77,29.64,38.1,36.28,11.36,3.1,24.12,6.6,33.9,14.34V128H88a8,8,0,0,1,0-16h32V82.83a28,28,0,1,1,16,0V112h32a8,8,0,0,1,0,16H136v66.62c9.78-7.74,22.54-11.24,33.9-14.34C194.23,173.64,208,168.69,208,144a8,8,0,0,1,16,0Z"/>',   // 18 anchor
+];
+function avGlyph(g){ const p=AVATAR_ICONS[((g||1)-1)]||AVATAR_ICONS[0]; return `<svg viewBox="0 0 256 256" fill="currentColor">${p}</svg>`; }
 
 // record a daily outcome; only Daily mode feeds stats (Play & Share is unranked)
 function recordDaily(solved){
@@ -1103,7 +1125,7 @@ function computeStats(){
     avg:      sv.length?(sum/sv.length):null, dist, cur, max};
 }
 
-function renderPic(el){ el.style.background='var(--c'+profile.c+')'; el.style.color='rgba(0,0,0,.5)'; el.textContent=avGlyph(profile.g); }
+function renderPic(el){ el.style.background='var(--c'+profile.c+')'; el.style.color='rgba(0,0,0,.55)'; el.innerHTML=avGlyph(profile.g); }
 function saveProfile(){ storeSet('flummox.profile', JSON.stringify(profile)); }
 
 function renderStats(){
@@ -1124,10 +1146,10 @@ function renderStats(){
 
 function buildEditor(){
   const cur=avGlyph(profile.g);
-  $('editColours').innerHTML=[1,2,3,4].map(c=>
+  $('editColours').innerHTML=[1,2,3,4,5,6].map(c=>
     `<button class="opt" data-c="${c}" style="background:var(--c${c})" aria-pressed="${c===profile.c}" aria-label="Avatar colour ${c}">${cur}</button>`).join('');
-  $('editGlyphs').innerHTML=AVATAR_GLYPHS.map((sym,i)=>
-    `<button class="opt" data-g="${i+1}" aria-pressed="${i+1===profile.g}" aria-label="Avatar icon ${i+1}">${sym}</button>`).join('');
+  $('editGlyphs').innerHTML=AVATAR_ICONS.map((_,i)=>
+    `<button class="opt" data-g="${i+1}" aria-pressed="${i+1===profile.g}" aria-label="Avatar icon ${i+1}">${avGlyph(i+1)}</button>`).join('');
   for(const b of $('editColours').querySelectorAll('[data-c]')) b.onclick=()=>{ profile.c=+b.dataset.c; profile.avatarSet=true; saveProfile(); renderStats(); buildEditor(); sbSyncProfile(); };
   for(const b of $('editGlyphs').querySelectorAll('[data-g]'))  b.onclick=()=>{ profile.g=+b.dataset.g; profile.avatarSet=true; saveProfile(); renderStats(); buildEditor(); sbSyncProfile(); };
 }
@@ -1217,7 +1239,7 @@ async function sbBackfillResults(){
 function escapeHtml(s){ return String(s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function selfName(){ const n=(profile.name||'').trim(); return n || 'You'; }   // your own name, "You" only until you set one
 // deterministic default tile from the user id, so new players vary instead of all starting on vermilion ●
-function avatarFromId(id){ let h=0; for(let i=0;i<id.length;i++) h=(h*31 + id.charCodeAt(i))>>>0; return { c:(h%4)+1, g:((h>>>3)%12)+1 }; }
+function avatarFromId(id){ let h=0; for(let i=0;i<id.length;i++) h=(h*31 + id.charCodeAt(i))>>>0; return { c:(h%6)+1, g:((h>>>3)%18)+1 }; }
 
 // ---- friend invites ----
 async function doInvite(){
